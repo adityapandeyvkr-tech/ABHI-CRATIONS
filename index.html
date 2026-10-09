@@ -148,6 +148,30 @@ label em{font-style:normal;opacity:.7}
 .banner{border:1px solid var(--amber);color:var(--amber);font-family:var(--f-code);font-size:13px;padding:10px 14px;margin-top:20px}
 .lock{max-width:380px;margin:48px auto 0}
 
+.who{display:flex;align-items:center;gap:10px;font-family:var(--f-code);font-size:12px;letter-spacing:.16em;color:var(--muted)}
+.who b{color:var(--amber);font-weight:400}
+.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;max-height:220px;overflow:auto;border:1px solid var(--line);padding:8px;background:rgba(2,12,20,.6)}
+.chk{display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:.04em;font-size:13px;color:var(--text);cursor:pointer;min-width:0}
+.chk input{width:16px;height:16px;flex:none;accent-color:#4FE3FF;padding:0}
+.chk span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.tags i{font-style:normal;font-family:var(--f-code);font-size:11px;color:var(--cyan);border:1px solid var(--line);padding:1px 6px}
+.tags i.none{color:var(--amber)}
+.section-gap{margin-top:20px}
+.tile .open{display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit}
+.tile .open:hover h3{color:var(--cyan)}
+.host a{color:var(--cyan);letter-spacing:.16em;flex:none;text-decoration:none}
+.pw > span:first-child{grid-column:1/-1}
+.pw{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 6px;align-items:center;font-family:var(--f-code);font-size:12px;border:1px solid var(--line);background:rgba(2,12,20,.65);padding:6px 8px}
+.pw.admin-pw{border-color:rgba(255,181,71,.45)}
+.pw > span:first-child{letter-spacing:.14em;color:var(--muted);font-size:10.5px}
+.pw.admin-pw > span:first-child{color:var(--amber)}
+.pw code{font-family:var(--f-code);color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.pw button{font:700 10px var(--f-hud);letter-spacing:.12em;background:transparent;color:var(--cyan);border:1px solid var(--line);padding:4px 7px;cursor:pointer}
+.pw button:hover{border-color:var(--cyan)}
+.flags{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.flags i{font-style:normal;font-family:var(--f-code);font-size:10.5px;padding:1px 6px;border:1px solid var(--line);color:var(--cyan)}
+.flags i.amb{color:var(--amber);border-color:rgba(255,181,71,.45)}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:.75;transform:scale(.96)}50%{opacity:1;transform:scale(1.03)}}
 @keyframes blink{50%{opacity:.15}}
@@ -163,6 +187,7 @@ label em{font-style:normal;opacity:.7}
       <h1>MY WEB APPS</h1>
     </div>
     <div class="online"><i></i><span id="sys-state">SYSTEM ONLINE</span></div>
+    <div class="who" id="who" hidden>USER: <b id="who-name">—</b><button class="btn sm" id="signout" type="button">Logout</button></div>
     <nav class="tabs" role="tablist">
       <button class="tab" role="tab" aria-selected="true" data-view="apps">Apps</button>
       <button class="tab" role="tab" aria-selected="false" data-view="admin">Admin</button>
@@ -172,6 +197,16 @@ label em{font-style:normal;opacity:.7}
 
   <!-- PAGE 1: APPS -->
   <section id="view-apps">
+    <div class="hud lock" id="gate" hidden>
+      <h2>Identify <em>ACCESS REQUIRED</em></h2>
+      <form id="gate-form">
+        <label for="g-name">Your name<input id="g-name" autocomplete="username" placeholder="e.g. Rahul"></label>
+        <label for="g-pin">PIN<input id="g-pin" type="password" inputmode="numeric" autocomplete="current-password"></label>
+        <button class="btn primary" type="submit">Enter</button>
+        <div class="msg" id="g-msg" role="status"></div>
+      </form>
+    </div>
+    <div id="deck" hidden>
     <div class="hero">
       <div class="reactor" aria-hidden="true">
         <svg viewBox="0 0 320 320">
@@ -216,7 +251,8 @@ label em{font-style:normal;opacity:.7}
     <div class="grid" id="grid"></div>
     <div class="empty" id="empty-apps" hidden>
       <strong>NO MODULES REGISTERED</strong>
-      Open the Admin tab and add your first app with its name and link.
+      <span id="empty-text">Open the Admin tab and add your first app with its name and link.</span>
+    </div>
     </div>
   </section>
 
@@ -248,7 +284,9 @@ label em{font-style:normal;opacity:.7}
           <form id="form" novalidate>
             <label for="f-name">App name<input id="f-name" maxlength="60" placeholder="e.g. Fuel Manager"></label>
             <label for="f-url">Link<input id="f-url" placeholder="https://yourname.github.io/app" inputmode="url"></label>
-            <label for="f-desc">Short note <em>(optional)</em><textarea id="f-desc" maxlength="140" placeholder="What this app is for"></textarea></label>
+            <label for="f-desc">Short note <em>(optional · only admin sees)</em><textarea id="f-desc" maxlength="140" placeholder="What this app is for"></textarea></label>
+            <label for="f-epass">Employee password <em>(optional · shown to employees who have this app)</em><input id="f-epass" maxlength="120" autocomplete="off" placeholder="Login password for employees"></label>
+            <label for="f-apass">Admin password <em>(optional · only admin sees)</em><input id="f-apass" maxlength="120" autocomplete="off" placeholder="Login password for admin"></label>
             <div class="row">
               <button class="btn primary" id="f-save" type="submit">Add app</button>
               <button class="btn" id="f-cancel" type="button" hidden>Cancel edit</button>
@@ -265,6 +303,26 @@ label em{font-style:normal;opacity:.7}
           </div>
         </div>
       </div>
+      <div class="admin section-gap">
+        <div class="hud">
+          <h2><span id="u-title">Add employee</span> <em>ACCESS CONTROL</em></h2>
+          <form id="u-form" novalidate>
+            <label for="u-name">Employee name<input id="u-name" maxlength="40" placeholder="e.g. Rahul" autocomplete="off"></label>
+            <label for="u-pin">PIN <em id="u-pin-hint">(min 4 digits)</em><input id="u-pin" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="e.g. 4821"></label>
+            <label>Apps this employee can see<div class="checks" id="u-apps"></div></label>
+            <div class="row">
+              <button class="btn primary" id="u-save" type="submit">Add employee</button>
+              <button class="btn" id="u-cancel" type="button" hidden>Cancel edit</button>
+            </div>
+            <div class="msg" id="u-msg" role="status"></div>
+          </form>
+        </div>
+        <div class="hud">
+          <h2>Employees <em id="u-count">0</em></h2>
+          <div class="list" id="u-list"></div>
+          <div class="empty" id="empty-users" hidden><strong>NO EMPLOYEES</strong>Add an employee and tick the apps they can open.</div>
+        </div>
+      </div>
     </div>
   </section>
 </div>
@@ -272,8 +330,8 @@ label em{font-style:normal;opacity:.7}
 <script>
 const $ = s => document.querySelector(s);
 const USE_GIST = !!GIST_ID;
-const LS_KEY = "myWebApps.v1", TOKEN_KEY = "myWebApps.ghToken", FILE = "apps.json";
-let apps = [], editingId = null, busy = false;
+const LS_KEY = "myWebApps.v1", LS_USERS = "myWebApps.users.v1", TOKEN_KEY = "myWebApps.ghToken", FILE = "apps.json", UFILE = "users.json", SESSION_KEY = "myWebApps.session";
+let apps = [], users = [], editingId = null, editingUser = null, busy = false;
 
 function getToken(){try{return localStorage.getItem(TOKEN_KEY)||""}catch{return ""}}
 function newId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -283,22 +341,22 @@ function sortList(v){return (Array.isArray(v)?v:[]).slice().sort((a,b)=>(a.order
    Gist mode  : apps.json file inside your GitHub Gist (never pauses)
    Local mode : this browser only (when GIST_ID is empty)          */
 const backend = USE_GIST ? {
-  async readAll(){
-    const h={"Accept":"application/vnd.github+json"}; const t=getToken(); if(t) h.Authorization="Bearer "+t;
-    const r=await fetch("https://api.github.com/gists/"+encodeURIComponent(GIST_ID)+"?t="+Date.now(),{headers:h,cache:"no-store"});
+  async read(){
+    const hd={"Accept":"application/vnd.github+json"}; const t=getToken(); if(t) hd.Authorization="Bearer "+t;
+    const r=await fetch("https://api.github.com/gists/"+encodeURIComponent(GIST_ID)+"?t="+Date.now(),{headers:hd,cache:"no-store"});
     if(!r.ok) throw Object.assign(new Error("read "+r.status),{status:r.status});
-    const g=await r.json(); const f=g.files&&g.files[FILE];
-    if(!f) return [];
-    let text=f.content;
-    if(f.truncated&&f.raw_url) text=await (await fetch(f.raw_url,{cache:"no-store"})).text();
-    try{return sortList(JSON.parse(text||"[]"))}catch{return []}
+    const g=await r.json();
+    const file=async name=>{const f=g.files&&g.files[name]; if(!f) return [];
+      let text=f.content; if(f.truncated&&f.raw_url) text=await (await fetch(f.raw_url,{cache:"no-store"})).text();
+      try{const v=JSON.parse(text||"[]");return Array.isArray(v)?v:[]}catch{return []}};
+    return {apps:sortList(await file(FILE)), users:await file(UFILE)};
   },
-  async saveAll(list){
+  async save(name,list){
     const t=getToken(); if(!t) throw Object.assign(new Error("no token"),{code:"no_token"});
     const r=await fetch("https://api.github.com/gists/"+encodeURIComponent(GIST_ID),{
       method:"PATCH",
       headers:{"Accept":"application/vnd.github+json","Authorization":"Bearer "+t,"Content-Type":"application/json"},
-      body:JSON.stringify({files:{[FILE]:{content:JSON.stringify(list,null,2)}}})
+      body:JSON.stringify({files:{[name]:{content:JSON.stringify(list,null,2)}}})
     });
     if(!r.ok){
       let gh=""; try{gh=(await r.json()).message||""}catch{}
@@ -306,16 +364,22 @@ const backend = USE_GIST ? {
     }
   }
 } : {
-  async readAll(){try{return sortList(JSON.parse(localStorage.getItem(LS_KEY))||[])}catch{return []}},
-  async saveAll(list){try{localStorage.setItem(LS_KEY,JSON.stringify(list))}catch{throw new Error("Browser storage blocked")}}
+  async read(){const g=k=>{try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(v)?v:[]}catch{return []}};return {apps:sortList(g(LS_KEY)),users:g(LS_USERS)}},
+  async save(name,list){try{localStorage.setItem(name===UFILE?LS_USERS:LS_KEY,JSON.stringify(list))}catch{throw new Error("Browser storage blocked")}}
 };
-/* Every change: read latest list → change it → save whole list → show it */
+/* Every change: read latest → change → save that file → show it */
 async function mutate(fn){
-  const list=await backend.readAll();
-  const next=sortList(fn(list.map(a=>({...a}))));
+  const d=await backend.read();
+  const next=sortList(fn(d.apps.map(a=>({...a}))));
   next.forEach((a,k)=>a.order=k+1);
-  await backend.saveAll(next);
-  apps=next; render(); markSync(true); logLine("> registry updated · "+next.length+" modules","ok");
+  await backend.save(FILE,next);
+  apps=next; users=d.users; render(); markSync(true); logLine("> registry updated · "+next.length+" modules","ok");
+}
+async function mutateUsers(fn){
+  const d=await backend.read();
+  const next=fn(d.users.map(u=>({...u})));
+  await backend.save(UFILE,next);
+  apps=d.apps; users=next; render(); markSync(true);
 }
 const store={
   add:(a)=>mutate(l=>[...l,{...a,id:newId(),order:1e9}]),
@@ -324,7 +388,7 @@ const store={
   move:(id,dir)=>mutate(l=>{const i=l.findIndex(a=>a.id===id),j=i+dir;if(i<0||j<0||j>=l.length)return l;[l[i],l[j]]=[l[j],l[i]];return l.map((a,k)=>({...a,order:k+1}))})
 };
 async function reload(){
-  try{apps=await backend.readAll();render();markSync(true)}
+  try{const d=await backend.read();apps=d.apps;users=d.users;render();markSync(true)}
   catch(e){console.error(e);markSync(false);$("#count").textContent=e.status===404?"Gist not found — check GIST_ID.":"Could not load apps — check internet.";}
 }
 function saveError(err){
@@ -360,32 +424,48 @@ function show(view){
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>show(t.dataset.view)));
 $("#pin-form").addEventListener("submit",e=>{
   e.preventDefault();
-  if($("#pin").value===ADMIN_PIN){try{sessionStorage.setItem("mwa.admin","1")}catch{} $("#pin").value="";$("#pin-msg").textContent="";show("admin")}
+  if($("#pin").value===ADMIN_PIN){try{sessionStorage.setItem("mwa.admin","1")}catch{} if(!getSession())setSession({role:"admin"}); render(); $("#pin").value="";$("#pin-msg").textContent="";show("admin")}
   else{$("#pin-msg").textContent="Wrong PIN. Try again.";$("#pin-msg").classList.add("err")}
 });
 $("#logout").addEventListener("click",()=>{try{sessionStorage.removeItem("mwa.admin")}catch{} show("apps")});
 
 /* ---------------- render ---------------- */
+function visibleApps(){
+  const s=getSession();
+  if(!s) return [];
+  if(s.role==="admin") return apps;
+  const u=users.find(x=>x.id===s.id);
+  if(!u) return [];
+  return apps.filter(a=>(u.apps||[]).includes(a.id));
+}
 function renderApps(){
+  const mine=visibleApps();
   const q=$("#search").value.trim().toLowerCase();
-  const list=apps.filter(a=>!q||(a.name+" "+(a.desc||"")+" "+a.url).toLowerCase().includes(q));
-  $("#grid").innerHTML=list.map(a=>{const n=apps.indexOf(a)+1;return `
-    <a class="tile" href="${esc(a.url)}" target="_blank" rel="noopener" style="animation-delay:${Math.min(n,12)*40}ms">
-      <div class="top"><span>MOD-${String(n).padStart(2,"0")}</span><span class="on">ONLINE</span></div>
-      <div class="glyph">${esc(initials(a.name))}</div>
-      <h3>${esc(a.name)}</h3>
-      ${a.desc?`<p>${esc(a.desc)}</p>`:""}
-      <div class="host"><span>${esc(host(a.url))}</span><span>LAUNCH ▸</span></div>
-    </a>`}).join("");
-  $("#empty-apps").hidden=apps.length>0;
-  $("#count").textContent=apps.length?(q?`${list.length} / ${apps.length} MATCH`:`${apps.length} MODULE${apps.length>1?"S":""}`):"0 MODULES";
+  const isAdmin=getSession()?.role==="admin";
+  const list=mine.filter(a=>!q||(a.name+" "+(isAdmin?(a.desc||""):"")+" "+a.url).toLowerCase().includes(q));
+  const pwRow=(label,val,cls)=>`<div class="pw ${cls}"><span>${label}</span><code data-secret="${esc(val)}">••••••••</code><button type="button" data-pw="show">SHOW</button><button type="button" data-pw="copy">COPY</button></div>`;
+  $("#grid").innerHTML=list.map(a=>{const n=mine.indexOf(a)+1;return `
+    <div class="tile" style="animation-delay:${Math.min(n,12)*40}ms">
+      <a class="open" href="${esc(a.url)}" target="_blank" rel="noopener">
+        <div class="top"><span>MOD-${String(n).padStart(2,"0")}</span><span class="on">ONLINE</span></div>
+        <div class="glyph">${esc(initials(a.name))}</div>
+        <h3>${esc(a.name)}</h3>
+        ${isAdmin&&a.desc?`<p>${esc(a.desc)}</p>`:""}
+      </a>
+      ${a.empPass?pwRow("EMP PASS",a.empPass,""):""}
+      ${isAdmin&&a.adminPass?pwRow("ADMIN PASS",a.adminPass,"admin-pw"):""}
+      <div class="host"><span>${esc(host(a.url))}</span><a href="${esc(a.url)}" target="_blank" rel="noopener">LAUNCH ▸</a></div>
+    </div>`}).join("");
+  $("#empty-apps").hidden=mine.length>0;
+  $("#empty-text").textContent=getSession()?.role==="admin"?"Open the Admin tab and add your first app with its name and link.":"No apps are assigned to you yet. Ask the admin to give you access.";
+  $("#count").textContent=mine.length?(q?`${list.length} / ${mine.length} MATCH`:`${mine.length} MODULE${mine.length>1?"S":""}`):"0 MODULES";
   hudCount();
 }
 function renderAdmin(){
   $("#list").innerHTML=apps.map((a,i)=>`
     <div class="item${a.id===editingId?" editing":""}" data-id="${esc(a.id)}">
       <span class="pos">${i+1}</span>
-      <div style="min-width:0"><b>${esc(a.name)}</b><small>${esc(a.url)}</small></div>
+      <div style="min-width:0"><b>${esc(a.name)}</b><small>${esc(a.url)}</small>${(a.empPass||a.adminPass||a.desc)?`<div class="flags">${a.desc?"<i>NOTE</i>":""}${a.empPass?"<i>EMP PASS</i>":""}${a.adminPass?'<i class="amb">ADMIN PASS</i>':""}</div>`:""}</div>
       <div class="row">
         <button class="btn sm" data-act="up" ${i===0?"disabled":""} aria-label="Move up">↑</button>
         <button class="btn sm" data-act="down" ${i===apps.length-1?"disabled":""} aria-label="Move down">↓</button>
@@ -395,7 +475,7 @@ function renderAdmin(){
     </div>`).join("");
   $("#empty-admin").hidden=apps.length>0;
 }
-function render(){renderApps();renderAdmin()}
+function render(){renderApps();renderAdmin();renderUsers();renderGate()}
 $("#search").addEventListener("input",renderApps);
 
 /* ---------------- form ---------------- */
@@ -403,13 +483,13 @@ function resetForm(){editingId=null;$("#form").reset();$("#form-title").textCont
 $("#f-cancel").addEventListener("click",()=>{resetForm();msg("")});
 $("#form").addEventListener("submit",async e=>{
   e.preventDefault(); if(busy)return;
-  const name=$("#f-name").value.trim(), url=normUrl($("#f-url").value), desc=$("#f-desc").value.trim();
+  const name=$("#f-name").value.trim(), url=normUrl($("#f-url").value), desc=$("#f-desc").value.trim(), empPass=$("#f-epass").value, adminPass=$("#f-apass").value;
   if(!name) return msg("Enter the app name.",true);
   if(!url) return msg("Enter a valid link, like https://example.com/app",true);
   busy=true;$("#f-save").disabled=true;
   try{
-    if(editingId){await store.update(editingId,{name,url,desc});msg(`Saved “${name}”.`);resetForm()}
-    else{await store.add({name,url,desc});$("#form").reset();msg(`Added “${name}”.`)}
+    if(editingId){await store.update(editingId,{name,url,desc,empPass,adminPass});msg(`Saved “${name}”.`);resetForm()}
+    else{await store.add({name,url,desc,empPass,adminPass});$("#form").reset();msg(`Added “${name}”.`)}
   }catch(err){console.error(err);msg(saveError(err),true)}
   busy=false;$("#f-save").disabled=false;
 });
@@ -420,7 +500,7 @@ $("#list").addEventListener("click",async e=>{
   const b=e.target.closest("button[data-act]"); if(!b||busy)return;
   const id=b.closest(".item").dataset.id, i=apps.findIndex(a=>a.id===id), a=apps[i], act=b.dataset.act;
   if(act==="edit"){
-    editingId=id;$("#f-name").value=a.name;$("#f-url").value=a.url;$("#f-desc").value=a.desc||"";
+    editingId=id;$("#f-name").value=a.name;$("#f-url").value=a.url;$("#f-desc").value=a.desc||"";$("#f-epass").value=a.empPass||"";$("#f-apass").value=a.adminPass||"";
     $("#form-title").textContent="Edit app";$("#f-save").textContent="Save changes";$("#f-cancel").hidden=false;
     msg("");renderAdmin();$("#f-name").focus();return;
   }
@@ -453,6 +533,121 @@ $("#token-form").addEventListener("submit",e=>{
 $("#token-clear").addEventListener("click",()=>{try{localStorage.removeItem(TOKEN_KEY)}catch{} $("#token-msg").textContent="Token removed from this browser."});
 
 
+/* ---------------- password show / copy ---------------- */
+$("#grid").addEventListener("click",async e=>{
+  const b=e.target.closest("button[data-pw]"); if(!b)return;
+  const code=b.parentElement.querySelector("code"), val=code.dataset.secret;
+  if(b.dataset.pw==="show"){
+    const hidden=code.textContent==="••••••••";
+    code.textContent=hidden?val:"••••••••"; b.textContent=hidden?"HIDE":"SHOW";
+  }else{
+    try{await navigator.clipboard.writeText(val);b.textContent="COPIED"}
+    catch{code.textContent=val;const r=document.createRange();r.selectNodeContents(code);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="SELECTED"}
+    setTimeout(()=>b.textContent="COPY",1500);
+  }
+});
+
+/* ---------------- employee login ---------------- */
+async function hashPin(pin){
+  const data=new TextEncoder().encode("mwa:"+pin);
+  const buf=await crypto.subtle.digest("SHA-256",data);
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY))}catch{return null}}
+function setSession(s){try{s?localStorage.setItem(SESSION_KEY,JSON.stringify(s)):localStorage.removeItem(SESSION_KEY)}catch{}}
+function renderGate(){
+  const s=getSession();
+  let name=null;
+  if(s&&s.role==="admin") name="ADMIN";
+  else if(s){const u=users.find(x=>x.id===s.id); name=u?u.name.toUpperCase():null}
+  const loggedIn=!!name;
+  $("#gate").hidden=loggedIn; $("#deck").hidden=!loggedIn;
+  $("#who").hidden=!loggedIn; $("#who-name").textContent=name||"—";
+  document.querySelector('.tab[data-view="admin"]').hidden = !!(s&&s.role==="employee"&&loggedIn);
+}
+$("#gate-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const name=$("#g-name").value.trim(), pin=$("#g-pin").value.trim(), m=$("#g-msg");
+  m.classList.add("err");
+  if(!pin){m.textContent="Enter your PIN.";return}
+  if(pin===ADMIN_PIN&&(!name||/^admin$/i.test(name))){setSession({role:"admin"})}
+  else{
+    if(!name){m.textContent="Enter your name.";return}
+    const hsh=await hashPin(pin);
+    const u=users.find(x=>x.name.trim().toLowerCase()===name.toLowerCase()&&x.pinHash===hsh);
+    if(!u){m.textContent="Name or PIN is wrong. Check with the admin.";return}
+    setSession({role:"employee",id:u.id});
+  }
+  $("#g-pin").value="";m.textContent="";
+  render(); logLine("> identity confirmed · "+($("#who-name").textContent),"ok");
+});
+$("#signout").addEventListener("click",()=>{setSession(null);try{sessionStorage.removeItem("mwa.admin")}catch{} $("#g-name").value="";show("apps");render()});
+
+/* ---------------- employees admin ---------------- */
+function renderUsers(){
+  const chosen=new Set([...document.querySelectorAll("#u-apps input:checked")].map(i=>i.value));
+  if(editingUser&&!$("#u-apps").dataset.filled){const u=users.find(x=>x.id===editingUser);(u?.apps||[]).forEach(id=>chosen.add(id))}
+  $("#u-apps").innerHTML=apps.length?apps.map(a=>`<label class="chk"><input type="checkbox" value="${esc(a.id)}" ${chosen.has(a.id)?"checked":""}><span>${esc(a.name)}</span></label>`).join(""):`<span class="note" style="margin:0">Add apps first.</span>`;
+  $("#u-apps").dataset.filled="1";
+  $("#u-list").innerHTML=users.map(u=>{
+    const names=apps.filter(a=>(u.apps||[]).includes(a.id)).map(a=>`<i>${esc(a.name)}</i>`).join("");
+    return `<div class="item${u.id===editingUser?" editing":""}" data-uid="${esc(u.id)}">
+      <span class="pos">◆</span>
+      <div style="min-width:0"><b>${esc(u.name)}</b><div class="tags">${names||'<i class="none">no apps</i>'}</div></div>
+      <div class="row"><button class="btn sm" data-uact="edit">Edit</button><button class="btn sm danger" data-uact="del">Delete</button></div>
+    </div>`}).join("");
+  $("#empty-users").hidden=users.length>0;
+  $("#u-count").textContent=users.length+" REGISTERED";
+}
+function umsg(t,err){const m=$("#u-msg");m.textContent=t;m.classList.toggle("err",!!err)}
+function resetUserForm(){editingUser=null;$("#u-form").reset();delete $("#u-apps").dataset.filled;$("#u-title").textContent="Add employee";$("#u-save").textContent="Add employee";$("#u-cancel").hidden=true;$("#u-pin-hint").textContent="(min 4 digits)";$("#u-apps").innerHTML="";renderUsers()}
+$("#u-cancel").addEventListener("click",()=>{resetUserForm();umsg("")});
+$("#u-form").addEventListener("submit",async e=>{
+  e.preventDefault(); if(busy)return;
+  const name=$("#u-name").value.trim(), pin=$("#u-pin").value.trim();
+  const picked=[...document.querySelectorAll("#u-apps input:checked")].map(i=>i.value);
+  if(!name) return umsg("Enter the employee name.",true);
+  if(/^admin$/i.test(name)) return umsg("Choose a name other than Admin.",true);
+  if(users.some(u=>u.id!==editingUser&&u.name.trim().toLowerCase()===name.toLowerCase())) return umsg("An employee with this name already exists.",true);
+  if(!editingUser&&pin.length<4) return umsg("PIN must be at least 4 digits.",true);
+  if(editingUser&&pin&&pin.length<4) return umsg("PIN must be at least 4 digits.",true);
+  if(pin&&pin===ADMIN_PIN) return umsg("This PIN is the admin PIN. Choose another.",true);
+  busy=true;$("#u-save").disabled=true;
+  try{
+    const pinHash=pin?await hashPin(pin):null;
+    if(editingUser){
+      await mutateUsers(l=>l.map(u=>u.id===editingUser?{...u,name,apps:picked,...(pinHash?{pinHash}:{})}:u));
+      umsg(`Saved ${name}.`);resetUserForm();
+    }else{
+      await mutateUsers(l=>[...l,{id:newId(),name,pinHash,apps:picked}]);
+      umsg(`Added ${name}. Tell them their name and PIN.`);resetUserForm();
+    }
+  }catch(err){console.error(err);umsg(saveError(err),true)}
+  busy=false;$("#u-save").disabled=false;
+});
+let uArmed=null,uTimer=null;
+$("#u-list").addEventListener("click",async e=>{
+  const b=e.target.closest("button[data-uact]"); if(!b||busy)return;
+  const id=b.closest(".item").dataset.uid, u=users.find(x=>x.id===id); if(!u)return;
+  if(b.dataset.uact==="edit"){
+    editingUser=id; delete $("#u-apps").dataset.filled; $("#u-apps").innerHTML="";
+    $("#u-name").value=u.name;$("#u-pin").value="";
+    $("#u-title").textContent="Edit employee";$("#u-save").textContent="Save changes";$("#u-cancel").hidden=false;
+    $("#u-pin-hint").textContent="(leave empty to keep old PIN)";
+    umsg("");renderUsers();$("#u-name").focus();return;
+  }
+  if(uArmed!==b){
+    if(uArmed){uArmed.classList.remove("armed");uArmed.textContent="Delete"}
+    uArmed=b;b.classList.add("armed");b.textContent="Confirm";
+    clearTimeout(uTimer);uTimer=setTimeout(()=>{b.classList.remove("armed");b.textContent="Delete";uArmed=null},4000);
+    return;
+  }
+  uArmed=null;busy=true;
+  try{await mutateUsers(l=>l.filter(x=>x.id!==id));if(editingUser===id)resetUserForm();umsg(`Deleted ${u.name}.`)}
+  catch(err){console.error(err);umsg(saveError(err),true)}
+  busy=false;
+});
+
 /* ---------------- HUD: clock, reactor, log, stats ---------------- */
 const pad=n=>String(n).padStart(2,"0");
 const t0=Date.now();
@@ -473,7 +668,7 @@ function tick(){
     h+=`<line x1="${160+r1*Math.cos(a)}" y1="${160+r1*Math.sin(a)}" x2="${160+r2*Math.cos(a)}" y2="${160+r2*Math.sin(a)}" stroke="#4FE3FF" stroke-opacity="${i%5?.35:.9}" stroke-width="${i%5?1:2}"/>`}
   g.innerHTML=h;
 })();
-function hudCount(){$("#mod-count").textContent=pad(apps.length)}
+function hudCount(){$("#mod-count").textContent=pad(visibleApps().length)}
 function markSync(ok){
   if(ok){syncedAt=Date.now();$("#m2").style.width="100%"}
   $("#st-net").textContent=ok?"STABLE":"OFFLINE";$("#m4").style.width=ok?"92%":"8%";
@@ -511,7 +706,8 @@ tick(); setInterval(tick,1000); boot();
 
 /* ---------------- start ---------------- */
 show(location.hash==="#admin"?"admin":"apps");
-reload().then(()=>logLine(apps.length?`> ${apps.length} modules online · all systems nominal`:"> registry empty · add apps from Admin",apps.length?"ok":"warn"));
+renderGate();
+reload().then(()=>{const n=visibleApps().length;logLine(getSession()?(n?`> ${n} modules online · all systems nominal`:"> no modules assigned"):"> awaiting identification…",n?"ok":"warn")});
 </script>
 </body>
 </html>
