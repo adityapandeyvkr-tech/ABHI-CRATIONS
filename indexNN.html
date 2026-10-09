@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Web Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<script>
+/* =========================================================
+   SETTINGS — sirf yahi 2 lines badalni hain
+   ---------------------------------------------------------
+   1) ADMIN_PIN : Admin page kholne ka PIN
+   2) GIST_ID   : aapke GitHub Gist ki ID. Bhar denge to apps
+      sab devices par sync honge (Gist kabhi pause nahi hota).
+      Khaali chhodenge to apps sirf isi browser mein save honge.
+   GitHub token yahan NAHI likhna — woh Admin page par ek
+   baar daalna hai, sirf usi browser mein save rehta hai.
+   ========================================================= */
+const ADMIN_PIN = "1234";
+const GIST_ID   = "262c0de0df95c0373ded276aad4772c6";   // e.g. "a1b2c3d4e5f6..." (gist link ka last hissa)
+</script>
+<style>
+:root{
+  --bg:#F3F6F6; --surface:#FFFFFF; --line:#D5DEDF; --fg:#13211F; --muted:#5B6E6C;
+  --accent:#0B7A75; --accent-ink:#FFFFFF; --accent-soft:#DDEFED; --danger:#B3261E; --danger-soft:#F8E1DF;
+  --warn-bg:#FFF4D6; --warn-fg:#6B4E00;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --r:10px; color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0D1514; --surface:#15201F; --line:#26403D; --fg:#E4EEEC; --muted:#8BA3A0;
+  --accent:#3CC7BC; --accent-ink:#06201E; --accent-soft:#163A37; --danger:#F2867D; --danger-soft:#3A1B19;
+  --warn-bg:#3A3010; --warn-fg:#F3D98A; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px;padding-block:24px 48px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.brand small{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,5vw,40px);line-height:1.05;margin:4px 0 0;letter-spacing:-.01em}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tab{font:600 14px var(--f-body);border:0;background:transparent;color:var(--muted);padding:8px 18px;border-radius:999px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:22px 0 16px}
+.count{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+input,textarea{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%}
+textarea{resize:vertical;min-height:64px}
+#search{max-width:320px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.tile{display:flex;flex-direction:column;gap:12px;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0;transition:border-color .15s,transform .15s}
+.tile:hover{border-color:var(--accent);transform:translateY(-2px)}
+.mono{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:18px;background:var(--accent-soft);color:var(--accent)}
+.tile h3{font-family:var(--f-display);font-weight:600;font-size:18px;line-height:1.2;margin:0;overflow-wrap:anywhere}
+.tile p{margin:0;color:var(--muted);font-size:13.5px;overflow-wrap:anywhere}
+.host{margin-top:auto;font-family:var(--f-mono);font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;gap:8px;min-width:0}
+.host span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.host span:last-child{color:var(--accent);flex:none}
+.empty{border:1.5px dashed var(--line);border-radius:var(--r);padding:36px 20px;text-align:center;color:var(--muted)}
+.empty strong{display:block;font-family:var(--f-display);font-size:20px;color:var(--fg);margin-bottom:6px}
+
+.admin{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:24px;margin-top:22px;align-items:start}
+@media (max-width:760px){.admin{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.panel h2{font-family:var(--f-display);font-weight:600;font-size:20px;margin:0 0 14px}
+form{display:grid;gap:14px}
+label{display:grid;gap:6px;font-size:13px;font-weight:600}
+label em{font-style:normal;font-weight:400;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:600 14px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:9px 14px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--danger)}
+.btn.danger.armed{background:var(--danger-soft);border-color:var(--danger)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:6px 10px;font-size:13px}
+.msg{font-size:13px;min-height:1.2em;color:var(--muted)}
+.msg.err{color:var(--danger)}
+.list{display:grid;gap:8px}
+.item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.item.editing{border-color:var(--accent)}
+.item .pos{font-family:var(--f-mono);font-size:12px;color:var(--muted);width:2ch;text-align:right}
+.item b{display:block;overflow-wrap:anywhere}
+.item small{display:block;font-family:var(--f-mono);font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .row{flex-wrap:nowrap}
+@media (max-width:520px){.item{grid-template-columns:auto minmax(0,1fr)}.item .row{grid-column:1/-1;flex-wrap:wrap}}
+.note{font-size:13px;color:var(--muted);margin:0 0 12px}
+.banner{background:var(--warn-bg);color:var(--warn-fg);border-radius:8px;padding:10px 14px;font-size:13px;margin-top:22px}
+.lock{max-width:340px;margin:40px auto 0}
+@media (prefers-reduced-motion:reduce){.tile{transition:none}.tile:hover{transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <small>Abhinav · App directory</small>
+      <h1>My Web Apps</h1>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-view="apps">Apps</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="admin">Admin</button>
+    </nav>
+  </header>
+
+  <!-- PAGE 1: APPS -->
+  <section id="view-apps">
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Search apps…" aria-label="Search apps">
+      <span class="count" id="count">Loading…</span>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty-apps" hidden>
+      <strong>No apps yet</strong>
+      Open the Admin tab and add your first app with its name and link.
+    </div>
+  </section>
+
+  <!-- PAGE 2: ADMIN -->
+  <section id="view-admin" hidden>
+    <div class="panel lock" id="lock">
+      <h2>Admin login</h2>
+      <form id="pin-form">
+        <label for="pin">Enter PIN<input id="pin" type="password" inputmode="numeric" autocomplete="off"></label>
+        <button class="btn primary" type="submit">Open Admin</button>
+        <div class="msg" id="pin-msg" role="status"></div>
+      </form>
+    </div>
+
+    <div id="admin-body" hidden>
+      <div class="banner" id="local-banner" hidden>Gist is not set up, so apps are saved only in this browser. Fill GIST_ID at the top of the file to sync on all devices.</div>
+      <div class="panel" id="token-panel" style="margin-top:22px" hidden>
+        <h2>GitHub token</h2>
+        <p class="note">Needed once on each device where you edit apps. It stays only in this browser and is never put in the file.</p>
+        <form id="token-form">
+          <label for="gh-token">Token (gist permission)<input id="gh-token" type="password" autocomplete="off" placeholder="ghp_… or github_pat_…"></label>
+          <div class="row"><button class="btn primary" type="submit">Save token</button><button class="btn" id="token-clear" type="button">Remove token</button></div>
+          <div class="msg" id="token-msg" role="status"></div>
+        </form>
+      </div>
+      <div class="admin">
+        <div class="panel">
+          <h2 id="form-title">Add app</h2>
+          <form id="form" novalidate>
+            <label for="f-name">App name<input id="f-name" maxlength="60" placeholder="e.g. Fuel Manager"></label>
+            <label for="f-url">Link<input id="f-url" placeholder="https://yourname.github.io/app" inputmode="url"></label>
+            <label for="f-desc">Short note <em>(optional)</em><textarea id="f-desc" maxlength="140" placeholder="What this app is for"></textarea></label>
+            <div class="row">
+              <button class="btn primary" id="f-save" type="submit">Add app</button>
+              <button class="btn" id="f-cancel" type="button" hidden>Cancel edit</button>
+            </div>
+            <div class="msg" id="f-msg" role="status"></div>
+          </form>
+        </div>
+        <div class="panel">
+          <h2>Buttons on the Apps page</h2>
+          <p class="note">Use ↑ ↓ to change the order.</p>
+          <div class="list" id="list"></div>
+          <div class="empty" id="empty-admin" hidden><strong>Nothing added</strong>Fill the form to create your first button.</div>
+          <div class="row" style="margin-top:16px">
+            <button class="btn sm" id="logout" type="button">Lock Admin</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const USE_GIST = !!GIST_ID;
+const LS_KEY = "myWebApps.v1", TOKEN_KEY = "myWebApps.ghToken", FILE = "apps.json";
+let apps = [], editingId = null, busy = false;
+
+function getToken(){try{return localStorage.getItem(TOKEN_KEY)||""}catch{return ""}}
+function newId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function sortList(v){return (Array.isArray(v)?v:[]).slice().sort((a,b)=>(a.order||0)-(b.order||0))}
+
+/* ---------------- storage ----------------
+   Gist mode  : apps.json file inside your GitHub Gist (never pauses)
+   Local mode : this browser only (when GIST_ID is empty)          */
+const backend = USE_GIST ? {
+  async readAll(){
+    const h={"Accept":"application/vnd.github+json"}; const t=getToken(); if(t) h.Authorization="Bearer "+t;
+    const r=await fetch("https://api.github.com/gists/"+encodeURIComponent(GIST_ID)+"?t="+Date.now(),{headers:h,cache:"no-store"});
+    if(!r.ok) throw Object.assign(new Error("read "+r.status),{status:r.status});
+    const g=await r.json(); const f=g.files&&g.files[FILE];
+    if(!f) return [];
+    let text=f.content;
+    if(f.truncated&&f.raw_url) text=await (await fetch(f.raw_url,{cache:"no-store"})).text();
+    try{return sortList(JSON.parse(text||"[]"))}catch{return []}
+  },
+  async saveAll(list){
+    const t=getToken(); if(!t) throw Object.assign(new Error("no token"),{code:"no_token"});
+    const r=await fetch("https://api.github.com/gists/"+encodeURIComponent(GIST_ID),{
+      method:"PATCH",
+      headers:{"Accept":"application/vnd.github+json","Authorization":"Bearer "+t,"Content-Type":"application/json"},
+      body:JSON.stringify({files:{[FILE]:{content:JSON.stringify(list,null,2)}}})
+    });
+    if(!r.ok) throw Object.assign(new Error("save "+r.status),{status:r.status});
+  }
+} : {
+  async readAll(){try{return sortList(JSON.parse(localStorage.getItem(LS_KEY))||[])}catch{return []}},
+  async saveAll(list){try{localStorage.setItem(LS_KEY,JSON.stringify(list))}catch{throw new Error("Browser storage blocked")}}
+};
+/* Every change: read latest list → change it → save whole list → show it */
+async function mutate(fn){
+  const list=await backend.readAll();
+  const next=sortList(fn(list.map(a=>({...a}))));
+  next.forEach((a,k)=>a.order=k+1);
+  await backend.saveAll(next);
+  apps=next; render();
+}
+const store={
+  add:(a)=>mutate(l=>[...l,{...a,id:newId(),order:1e9}]),
+  update:(id,p)=>mutate(l=>l.map(a=>a.id===id?{...a,...p}:a)),
+  remove:(id)=>mutate(l=>l.filter(a=>a.id!==id)),
+  move:(id,dir)=>mutate(l=>{const i=l.findIndex(a=>a.id===id),j=i+dir;if(i<0||j<0||j>=l.length)return l;[l[i],l[j]]=[l[j],l[i]];return l.map((a,k)=>({...a,order:k+1}))})
+};
+async function reload(){
+  try{apps=await backend.readAll();render()}
+  catch(e){console.error(e);$("#count").textContent=e.status===404?"Gist not found — check GIST_ID.":"Could not load apps — check internet.";}
+}
+function saveError(err){
+  if(err&&err.code==="no_token") return "Add your GitHub token first (box below).";
+  if(err&&(err.status===401||err.status===403)) return "GitHub token is wrong or has no gist permission.";
+  if(err&&err.status===404) return "Gist not found. Check GIST_ID and that the token belongs to the gist owner.";
+  return "Could not save. Check your internet and try again.";
+}
+
+/* ---------------- helpers ---------------- */
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function host(u){try{return new URL(u).host.replace(/^www\./,"")}catch{return u}}
+function initials(n){const w=String(n).trim().split(/\s+/);return ((w[0]||"")[0]||"?").toUpperCase()+((w[1]||"")[0]||"").toUpperCase()}
+function normUrl(u){u=u.trim();if(!u)return "";if(!/^https?:\/\//i.test(u))u="https://"+u;try{const x=new URL(u);return (x.hostname.includes(".")||x.hostname==="localhost")?x.href:""}catch{return ""}}
+function msg(t,err){const m=$("#f-msg");m.textContent=t;m.classList.toggle("err",!!err)}
+
+/* ---------------- views ---------------- */
+function isUnlocked(){try{return sessionStorage.getItem("mwa.admin")==="1"}catch{return false}}
+function show(view){
+  document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.view===view));
+  $("#view-apps").hidden=view!=="apps";
+  $("#view-admin").hidden=view!=="admin";
+  const ok=isUnlocked();
+  $("#lock").hidden=ok; $("#admin-body").hidden=!ok;
+  $("#local-banner").hidden=USE_GIST;
+  $("#token-panel").hidden=!USE_GIST;
+  $("#token-msg").textContent=getToken()?"Token saved in this browser.":"No token saved yet.";
+  if(view==="admin"&&!ok) setTimeout(()=>$("#pin").focus(),0);
+  try{ if(location.hash!=="#"+view) history.replaceState(null,"","#"+view); }catch(e){ /* preview window mein allowed nahi — ignore */ }
+}
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>show(t.dataset.view)));
+$("#pin-form").addEventListener("submit",e=>{
+  e.preventDefault();
+  if($("#pin").value===ADMIN_PIN){try{sessionStorage.setItem("mwa.admin","1")}catch{} $("#pin").value="";$("#pin-msg").textContent="";show("admin")}
+  else{$("#pin-msg").textContent="Wrong PIN. Try again.";$("#pin-msg").classList.add("err")}
+});
+$("#logout").addEventListener("click",()=>{try{sessionStorage.removeItem("mwa.admin")}catch{} show("apps")});
+
+/* ---------------- render ---------------- */
+function renderApps(){
+  const q=$("#search").value.trim().toLowerCase();
+  const list=apps.filter(a=>!q||(a.name+" "+(a.desc||"")+" "+a.url).toLowerCase().includes(q));
+  $("#grid").innerHTML=list.map(a=>`
+    <a class="tile" href="${esc(a.url)}" target="_blank" rel="noopener">
+      <div class="mono">${esc(initials(a.name))}</div>
+      <h3>${esc(a.name)}</h3>
+      ${a.desc?`<p>${esc(a.desc)}</p>`:""}
+      <div class="host"><span>${esc(host(a.url))}</span><span>Open ↗</span></div>
+    </a>`).join("");
+  $("#empty-apps").hidden=apps.length>0;
+  $("#count").textContent=apps.length?(q?`${list.length} of ${apps.length} apps`:`${apps.length} app${apps.length>1?"s":""}`):"0 apps";
+}
+function renderAdmin(){
+  $("#list").innerHTML=apps.map((a,i)=>`
+    <div class="item${a.id===editingId?" editing":""}" data-id="${esc(a.id)}">
+      <span class="pos">${i+1}</span>
+      <div style="min-width:0"><b>${esc(a.name)}</b><small>${esc(a.url)}</small></div>
+      <div class="row">
+        <button class="btn sm" data-act="up" ${i===0?"disabled":""} aria-label="Move up">↑</button>
+        <button class="btn sm" data-act="down" ${i===apps.length-1?"disabled":""} aria-label="Move down">↓</button>
+        <button class="btn sm" data-act="edit">Edit</button>
+        <button class="btn sm danger" data-act="del">Delete</button>
+      </div>
+    </div>`).join("");
+  $("#empty-admin").hidden=apps.length>0;
+}
+function render(){renderApps();renderAdmin()}
+$("#search").addEventListener("input",renderApps);
+
+/* ---------------- form ---------------- */
+function resetForm(){editingId=null;$("#form").reset();$("#form-title").textContent="Add app";$("#f-save").textContent="Add app";$("#f-cancel").hidden=true;renderAdmin()}
+$("#f-cancel").addEventListener("click",()=>{resetForm();msg("")});
+$("#form").addEventListener("submit",async e=>{
+  e.preventDefault(); if(busy)return;
+  const name=$("#f-name").value.trim(), url=normUrl($("#f-url").value), desc=$("#f-desc").value.trim();
+  if(!name) return msg("Enter the app name.",true);
+  if(!url) return msg("Enter a valid link, like https://example.com/app",true);
+  busy=true;$("#f-save").disabled=true;
+  try{
+    if(editingId){await store.update(editingId,{name,url,desc});msg(`Saved “${name}”.`);resetForm()}
+    else{await store.add({name,url,desc});$("#form").reset();msg(`Added “${name}”.`)}
+  }catch(err){console.error(err);msg(saveError(err),true)}
+  busy=false;$("#f-save").disabled=false;
+});
+
+/* ---------------- list actions ---------------- */
+let armed=null,armTimer=null;
+$("#list").addEventListener("click",async e=>{
+  const b=e.target.closest("button[data-act]"); if(!b||busy)return;
+  const id=b.closest(".item").dataset.id, i=apps.findIndex(a=>a.id===id), a=apps[i], act=b.dataset.act;
+  if(act==="edit"){
+    editingId=id;$("#f-name").value=a.name;$("#f-url").value=a.url;$("#f-desc").value=a.desc||"";
+    $("#form-title").textContent="Edit app";$("#f-save").textContent="Save changes";$("#f-cancel").hidden=false;
+    msg("");renderAdmin();$("#f-name").focus();return;
+  }
+  if(act==="del"){
+    if(armed!==b){
+      if(armed){armed.classList.remove("armed");armed.textContent="Delete"}
+      armed=b;b.classList.add("armed");b.textContent="Confirm";
+      clearTimeout(armTimer);armTimer=setTimeout(()=>{b.classList.remove("armed");b.textContent="Delete";armed=null},4000);
+      return;
+    }
+    armed=null;busy=true;
+    try{await store.remove(id);if(editingId===id)resetForm();msg(`Deleted “${a.name}”.`)}
+    catch(err){console.error(err);msg(saveError(err),true)}
+    busy=false;return;
+  }
+  busy=true;
+  try{await store.move(id,act==="up"?-1:1)}
+  catch(err){console.error(err);msg(saveError(err),true)}
+  busy=false;
+});
+
+/* ---------------- GitHub token (only this browser) ---------------- */
+$("#token-form").addEventListener("submit",e=>{
+  e.preventDefault();
+  const t=$("#gh-token").value.trim();
+  if(!t){$("#token-msg").textContent="Paste the token first.";return}
+  try{localStorage.setItem(TOKEN_KEY,t);$("#gh-token").value="";$("#token-msg").textContent="Token saved in this browser."}
+  catch{$("#token-msg").textContent="This browser blocked saving. Try a normal (not private) window."}
+});
+$("#token-clear").addEventListener("click",()=>{try{localStorage.removeItem(TOKEN_KEY)}catch{} $("#token-msg").textContent="Token removed from this browser."});
+
+/* ---------------- start ---------------- */
+show(location.hash==="#admin"?"admin":"apps");
+reload();
+</script>
+</body>
+</html>
