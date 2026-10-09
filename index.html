@@ -201,7 +201,10 @@ const backend = USE_GIST ? {
       headers:{"Accept":"application/vnd.github+json","Authorization":"Bearer "+t,"Content-Type":"application/json"},
       body:JSON.stringify({files:{[FILE]:{content:JSON.stringify(list,null,2)}}})
     });
-    if(!r.ok) throw Object.assign(new Error("save "+r.status),{status:r.status});
+    if(!r.ok){
+      let gh=""; try{gh=(await r.json()).message||""}catch{}
+      throw Object.assign(new Error("save "+r.status),{status:r.status,gh,scopes:r.headers.get("x-oauth-scopes")});
+    }
   }
 } : {
   async readAll(){try{return sortList(JSON.parse(localStorage.getItem(LS_KEY))||[])}catch{return []}},
@@ -227,8 +230,10 @@ async function reload(){
 }
 function saveError(err){
   if(err&&err.code==="no_token") return "Add your GitHub token first (box below).";
-  if(err&&(err.status===401||err.status===403)) return "GitHub token is wrong or has no gist permission.";
-  if(err&&err.status===404) return "Gist not found. Check GIST_ID and that the token belongs to the gist owner.";
+  const why = err&&err.gh ? ` (GitHub: ${err.gh}${err.scopes!=null?` · token permissions: ${err.scopes||"none"}`:""})` : "";
+  if(err&&err.status===401) return "GitHub did not accept this token. It may be deleted, expired or copied wrong."+why;
+  if(err&&err.status===403) return "This token is not allowed to edit gists. Make a new token with the gist box ticked."+why;
+  if(err&&err.status===404) return "Gist not found for this token. The token must be from the same GitHub account that owns the gist."+why;
   return "Could not save. Check your internet and try again.";
 }
 
@@ -341,7 +346,7 @@ $("#token-form").addEventListener("submit",e=>{
   e.preventDefault();
   const t=$("#gh-token").value.trim();
   if(!t){$("#token-msg").textContent="Paste the token first.";return}
-  try{localStorage.setItem(TOKEN_KEY,t);$("#gh-token").value="";$("#token-msg").textContent="Token saved in this browser."}
+  try{localStorage.setItem(TOKEN_KEY,t.replace(/\s+/g,""));$("#gh-token").value="";$("#token-msg").textContent="Token saved in this browser."}
   catch{$("#token-msg").textContent="This browser blocked saving. Try a normal (not private) window."}
 });
 $("#token-clear").addEventListener("click",()=>{try{localStorage.removeItem(TOKEN_KEY)}catch{} $("#token-msg").textContent="Token removed from this browser."});
