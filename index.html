@@ -8,17 +8,26 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap">
 <script>
 /* =========================================================
-   SETTINGS — sirf yahi 2 lines badalni hain
+   SETTINGS — Firebase setup ke baad yahan bharna hai
    ---------------------------------------------------------
-   1) ADMIN_PIN : Admin page kholne ka PIN
-   2) GIST_ID   : aapke GitHub Gist ki ID. Bhar denge to apps
-      sab devices par sync honge (Gist kabhi pause nahi hota).
-      Khaali chhodenge to apps sirf isi browser mein save honge.
-   GitHub token yahan NAHI likhna — woh Admin page par ek
-   baar daalna hai, sirf usi browser mein save rehta hai.
+   1) FIREBASE_CONFIG : Firebase console se copy kiya hua config
+   2) ADMIN_EMAIL     : aapka admin login email (Firebase mein
+                        banaya hua). Isi email se login karne par
+                        Admin tab dikhega.
+   3) OLD_GIST_ID     : purani apps import karne ke liye (ek baar).
+                        Import ke baad "" kar sakte hain.
+   Note: Firebase ka apiKey public hota hai — yeh secret nahi hai.
+   Security Firestore Rules se aati hai.
    ========================================================= */
-const ADMIN_PIN = "1234";
-const GIST_ID   = "262c0de0df95c0373ded276aad4772c6";
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCt6CvBGILKJzQDQBIWgBBSc9HvuJUC3iQ",
+  authDomain: "creations-f229e.firebaseapp.com",
+  projectId: "creations-f229e",
+  appId: "1:9367136324:web:c854967874de65a41cf411"
+};
+const ADMIN_EMAIL  = "adityapandey.vkr@gmail.com";
+const STAFF_DOMAIN = "staff.mywebapps";   // employees ke username isse login email bante hain
+const OLD_GIST_ID  = "262c0de0df95c0373ded276aad4772c6";
 </script>
 <style>
 /* Layout: holographic command deck — status bar, reactor + system log hero, module grid; one deliberate dark look */
@@ -177,6 +186,11 @@ label em{font-style:normal;opacity:.7}
 @keyframes blink{50%{opacity:.15}}
 @keyframes rise{from{opacity:.2;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style><style>
+.setup{max-width:640px;margin:48px auto 0}
+.setup ol{font-family:var(--f-code);font-size:13.5px;line-height:1.8;color:var(--text);padding-left:20px;margin:0}
+.modal{position:fixed;inset:0;z-index:60;background:rgba(1,6,10,.82);display:grid;place-items:center;padding:16px}
+.modal .hud{width:100%;max-width:400px}
 </style>
 </head>
 <body>
@@ -186,27 +200,40 @@ label em{font-style:normal;opacity:.7}
       <small>ABHINAV // COMMAND DECK</small>
       <h1>MY WEB APPS</h1>
     </div>
-    <div class="online"><i></i><span id="sys-state">SYSTEM ONLINE</span></div>
-    <div class="who" id="who" hidden>USER: <b id="who-name">—</b><button class="btn sm" id="signout" type="button">Logout</button></div>
-    <nav class="tabs" role="tablist">
+    <div class="online"><i></i><span id="sys-state">CONNECTING</span></div>
+    <div class="who" id="who" hidden>USER: <b id="who-name">—</b>
+      <button class="btn sm" id="chpw-open" type="button">Password</button>
+      <button class="btn sm" id="signout" type="button">Logout</button>
+    </div>
+    <nav class="tabs" role="tablist" id="tabs" hidden>
       <button class="tab" role="tab" aria-selected="true" data-view="apps">Apps</button>
       <button class="tab" role="tab" aria-selected="false" data-view="admin">Admin</button>
     </nav>
     <div class="clock"><b id="clk">--:--:--</b><span id="dt">----</span></div>
   </header>
 
+  <!-- not configured yet -->
+  <div class="hud setup" id="setup" hidden>
+    <h2>Setup needed <em>FIREBASE</em></h2>
+    <ol>
+      <li>Open this file and fill FIREBASE_CONFIG and ADMIN_EMAIL at the top.</li>
+      <li>Upload the file to GitHub again and reload this page.</li>
+    </ol>
+  </div>
+
+  <!-- login -->
+  <div class="hud lock" id="gate" hidden>
+    <h2>Identify <em>ACCESS REQUIRED</em></h2>
+    <form id="gate-form">
+      <label for="g-user">Username<input id="g-user" autocomplete="username" placeholder="e.g. rahul (admin: your email)"></label>
+      <label for="g-pass">Password<input id="g-pass" type="password" autocomplete="current-password"></label>
+      <button class="btn primary" id="g-btn" type="submit">Enter</button>
+      <div class="msg" id="g-msg" role="status"></div>
+    </form>
+  </div>
+
   <!-- PAGE 1: APPS -->
-  <section id="view-apps">
-    <div class="hud lock" id="gate" hidden>
-      <h2>Identify <em>ACCESS REQUIRED</em></h2>
-      <form id="gate-form">
-        <label for="g-name">Your name<input id="g-name" autocomplete="username" placeholder="e.g. Rahul"></label>
-        <label for="g-pin">PIN<input id="g-pin" type="password" inputmode="numeric" autocomplete="current-password"></label>
-        <button class="btn primary" type="submit">Enter</button>
-        <div class="msg" id="g-msg" role="status"></div>
-      </form>
-    </div>
-    <div id="deck" hidden>
+  <section id="view-apps" hidden>
     <div class="hero">
       <div class="reactor" aria-hidden="true">
         <svg viewBox="0 0 320 320">
@@ -226,7 +253,6 @@ label em{font-style:normal;opacity:.7}
         </svg>
         <div class="rc"><b id="mod-count">00</b><span>MODULES ONLINE</span></div>
       </div>
-
       <div class="side">
         <div class="hud">
           <h2>System Log <em id="log-time">BOOT</em></h2>
@@ -234,7 +260,7 @@ label em{font-style:normal;opacity:.7}
         </div>
         <div class="hud">
           <div class="stats">
-            <div class="stat"><span>STORAGE</span><b id="st-store">—</b><div class="meter"><i id="m1"></i></div></div>
+            <div class="stat"><span>STORAGE</span><b>FIREBASE</b><div class="meter"><i id="m1"></i></div></div>
             <div class="stat"><span>LAST SYNC</span><b id="st-sync">—</b><div class="meter"><i id="m2"></i></div></div>
             <div class="stat"><span>SESSION</span><b id="st-up">00:00</b><div class="meter"><i id="m3"></i></div></div>
             <div class="stat"><span>NETWORK</span><b id="st-net">—</b><div class="meter"><i id="m4"></i></div></div>
@@ -242,7 +268,6 @@ label em{font-style:normal;opacity:.7}
         </div>
       </div>
     </div>
-
     <div class="toolbar">
       <h2>// MODULES</h2>
       <div class="search"><input id="search" type="search" placeholder="search modules_" aria-label="Search apps"></div>
@@ -250,464 +275,423 @@ label em{font-style:normal;opacity:.7}
     </div>
     <div class="grid" id="grid"></div>
     <div class="empty" id="empty-apps" hidden>
-      <strong>NO MODULES REGISTERED</strong>
-      <span id="empty-text">Open the Admin tab and add your first app with its name and link.</span>
-    </div>
+      <strong>NO MODULES</strong>
+      <span id="empty-text">No apps yet.</span>
     </div>
   </section>
 
-  <!-- PAGE 2: ADMIN -->
+  <!-- PAGE 2: ADMIN (only admin account) -->
   <section id="view-admin" hidden>
-    <div class="hud lock" id="lock">
-      <h2>Access Control <em>AUTH REQUIRED</em></h2>
-      <form id="pin-form">
-        <label for="pin">Enter PIN<input id="pin" type="password" inputmode="numeric" autocomplete="off"></label>
-        <button class="btn primary" type="submit">Authorize</button>
-        <div class="msg" id="pin-msg" role="status"></div>
-      </form>
-    </div>
-
-    <div id="admin-body" hidden>
-      <div class="banner" id="local-banner" hidden>Gist is not set up, so apps are saved only in this browser. Fill GIST_ID at the top of the file to sync on all devices.</div>
-      <div class="hud" id="token-panel" style="margin-top:20px" hidden>
-        <h2>GitHub Token <em>THIS BROWSER ONLY</em></h2>
-        <p class="note">Needed once on each device where you edit apps. It stays only in this browser and is never put in the file.</p>
-        <form id="token-form">
-          <label for="gh-token">Token (gist permission)<input id="gh-token" type="password" autocomplete="off" placeholder="ghp_… or github_pat_…"></label>
-          <div class="row"><button class="btn primary" type="submit">Save token</button><button class="btn" id="token-clear" type="button">Remove token</button></div>
-          <div class="msg" id="token-msg" role="status"></div>
+    <div class="admin">
+      <div class="hud">
+        <h2><span id="form-title">Add app</span> <em>REGISTER MODULE</em></h2>
+        <form id="form" novalidate>
+          <label for="f-name">App name<input id="f-name" maxlength="60" placeholder="e.g. Fuel Manager"></label>
+          <label for="f-url">Link<input id="f-url" placeholder="https://yourname.github.io/app" inputmode="url"></label>
+          <label for="f-desc">Short note <em>(optional · only admin sees)</em><textarea id="f-desc" maxlength="140" placeholder="What this app is for"></textarea></label>
+          <label for="f-epass">Employee password <em>(optional · shown to employees who have this app)</em><input id="f-epass" maxlength="120" autocomplete="off" placeholder="Login password for employees"></label>
+          <label for="f-apass">Admin password <em>(optional · only admin sees)</em><input id="f-apass" maxlength="120" autocomplete="off" placeholder="Login password for admin"></label>
+          <div class="row">
+            <button class="btn primary" id="f-save" type="submit">Add app</button>
+            <button class="btn" id="f-cancel" type="button" hidden>Cancel edit</button>
+          </div>
+          <div class="msg" id="f-msg" role="status"></div>
         </form>
       </div>
-      <div class="admin">
-        <div class="hud">
-          <h2><span id="form-title">Add app</span> <em>REGISTER MODULE</em></h2>
-          <form id="form" novalidate>
-            <label for="f-name">App name<input id="f-name" maxlength="60" placeholder="e.g. Fuel Manager"></label>
-            <label for="f-url">Link<input id="f-url" placeholder="https://yourname.github.io/app" inputmode="url"></label>
-            <label for="f-desc">Short note <em>(optional · only admin sees)</em><textarea id="f-desc" maxlength="140" placeholder="What this app is for"></textarea></label>
-            <label for="f-epass">Employee password <em>(optional · shown to employees who have this app)</em><input id="f-epass" maxlength="120" autocomplete="off" placeholder="Login password for employees"></label>
-            <label for="f-apass">Admin password <em>(optional · only admin sees)</em><input id="f-apass" maxlength="120" autocomplete="off" placeholder="Login password for admin"></label>
-            <div class="row">
-              <button class="btn primary" id="f-save" type="submit">Add app</button>
-              <button class="btn" id="f-cancel" type="button" hidden>Cancel edit</button>
-            </div>
-            <div class="msg" id="f-msg" role="status"></div>
-          </form>
-        </div>
-        <div class="hud">
-          <h2>Buttons on the Apps page <em>↑ ↓ TO REORDER</em></h2>
-          <div class="list" id="list"></div>
-          <div class="empty" id="empty-admin" hidden><strong>NOTHING ADDED</strong>Fill the form to create your first button.</div>
-          <div class="row" style="margin-top:16px">
-            <button class="btn sm" id="logout" type="button">Lock Admin</button>
-          </div>
+      <div class="hud">
+        <h2>Buttons on the Apps page <em>↑ ↓ TO REORDER</em></h2>
+        <div class="list" id="list"></div>
+        <div class="empty" id="empty-admin" hidden><strong>NOTHING ADDED</strong>Fill the form to create your first button.</div>
+        <div class="row" style="margin-top:16px">
+          <button class="btn sm" id="import-gist" type="button" hidden>Import apps from old Gist</button>
         </div>
       </div>
-      <div class="admin section-gap">
-        <div class="hud">
-          <h2><span id="u-title">Add employee</span> <em>ACCESS CONTROL</em></h2>
-          <form id="u-form" novalidate>
-            <label for="u-name">Employee name<input id="u-name" maxlength="40" placeholder="e.g. Rahul" autocomplete="off"></label>
-            <label for="u-pin">PIN <em id="u-pin-hint">(min 4 digits)</em><input id="u-pin" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="e.g. 4821"></label>
-            <label>Apps this employee can see<div class="checks" id="u-apps"></div></label>
-            <div class="row">
-              <button class="btn primary" id="u-save" type="submit">Add employee</button>
-              <button class="btn" id="u-cancel" type="button" hidden>Cancel edit</button>
-            </div>
-            <div class="msg" id="u-msg" role="status"></div>
-          </form>
-        </div>
-        <div class="hud">
-          <h2>Employees <em id="u-count">0</em></h2>
-          <div class="list" id="u-list"></div>
-          <div class="empty" id="empty-users" hidden><strong>NO EMPLOYEES</strong>Add an employee and tick the apps they can open.</div>
-        </div>
+    </div>
+
+    <div class="admin section-gap">
+      <div class="hud">
+        <h2><span id="u-title">Add employee</span> <em>ACCESS CONTROL</em></h2>
+        <form id="u-form" novalidate>
+          <label for="u-name">Employee name<input id="u-name" maxlength="40" placeholder="e.g. Rahul Sharma" autocomplete="off"></label>
+          <label for="u-user">Username <em>(small letters/numbers, used to log in)</em><input id="u-user" maxlength="30" placeholder="e.g. rahul" autocomplete="off" autocapitalize="none"></label>
+          <label for="u-pass" id="u-pass-wrap">Password <em>(min 6 characters)</em><input id="u-pass" maxlength="60" autocomplete="new-password" placeholder="e.g. Rahul@4821"></label>
+          <label>Apps this employee can see<div class="checks" id="u-apps"></div></label>
+          <div class="row">
+            <button class="btn primary" id="u-save" type="submit">Add employee</button>
+            <button class="btn" id="u-cancel" type="button" hidden>Cancel edit</button>
+          </div>
+          <div class="msg" id="u-msg" role="status"></div>
+        </form>
+      </div>
+      <div class="hud">
+        <h2>Employees <em id="u-count">0</em></h2>
+        <div class="list" id="u-list"></div>
+        <div class="empty" id="empty-users" hidden><strong>NO EMPLOYEES</strong>Add an employee and tick the apps they can open.</div>
       </div>
     </div>
   </section>
 </div>
 
-<script>
+<!-- change password -->
+<div class="modal" id="chpw" hidden>
+  <div class="hud">
+    <h2>Change password <em>YOUR ACCOUNT</em></h2>
+    <form id="chpw-form">
+      <label for="c-old">Current password<input id="c-old" type="password" autocomplete="current-password"></label>
+      <label for="c-new">New password <em>(min 6 characters)</em><input id="c-new" type="password" autocomplete="new-password"></label>
+      <div class="row"><button class="btn primary" type="submit">Change</button><button class="btn" id="chpw-close" type="button">Close</button></div>
+      <div class="msg" id="c-msg" role="status"></div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword,
+         updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 const $ = s => document.querySelector(s);
-const USE_GIST = !!GIST_ID;
-const LS_KEY = "myWebApps.v1", LS_USERS = "myWebApps.users.v1", TOKEN_KEY = "myWebApps.ghToken", FILE = "apps.json", UFILE = "users.json", SESSION_KEY = "myWebApps.session";
-let apps = [], users = [], editingId = null, editingUser = null, busy = false;
-
-function getToken(){try{return localStorage.getItem(TOKEN_KEY)||""}catch{return ""}}
-function newId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-function sortList(v){return (Array.isArray(v)?v:[]).slice().sort((a,b)=>(a.order||0)-(b.order||0))}
-
-/* ---------------- storage ----------------
-   Gist mode  : apps.json file inside your GitHub Gist (never pauses)
-   Local mode : this browser only (when GIST_ID is empty)          */
-const backend = USE_GIST ? {
-  async read(){
-    const hd={"Accept":"application/vnd.github+json"}; const t=getToken(); if(t) hd.Authorization="Bearer "+t;
-    const r=await fetch("https://api.github.com/gists/"+encodeURIComponent(GIST_ID)+"?t="+Date.now(),{headers:hd,cache:"no-store"});
-    if(!r.ok) throw Object.assign(new Error("read "+r.status),{status:r.status});
-    const g=await r.json();
-    const file=async name=>{const f=g.files&&g.files[name]; if(!f) return [];
-      let text=f.content; if(f.truncated&&f.raw_url) text=await (await fetch(f.raw_url,{cache:"no-store"})).text();
-      try{const v=JSON.parse(text||"[]");return Array.isArray(v)?v:[]}catch{return []}};
-    return {apps:sortList(await file(FILE)), users:await file(UFILE)};
-  },
-  async save(name,list){
-    const t=getToken(); if(!t) throw Object.assign(new Error("no token"),{code:"no_token"});
-    const r=await fetch("https://api.github.com/gists/"+encodeURIComponent(GIST_ID),{
-      method:"PATCH",
-      headers:{"Accept":"application/vnd.github+json","Authorization":"Bearer "+t,"Content-Type":"application/json"},
-      body:JSON.stringify({files:{[name]:{content:JSON.stringify(list,null,2)}}})
-    });
-    if(!r.ok){
-      let gh=""; try{gh=(await r.json()).message||""}catch{}
-      throw Object.assign(new Error("save "+r.status),{status:r.status,gh,scopes:r.headers.get("x-oauth-scopes")});
-    }
-  }
-} : {
-  async read(){const g=k=>{try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(v)?v:[]}catch{return []}};return {apps:sortList(g(LS_KEY)),users:g(LS_USERS)}},
-  async save(name,list){try{localStorage.setItem(name===UFILE?LS_USERS:LS_KEY,JSON.stringify(list))}catch{throw new Error("Browser storage blocked")}}
-};
-/* Every change: read latest → change → save that file → show it */
-async function mutate(fn){
-  const d=await backend.read();
-  const next=sortList(fn(d.apps.map(a=>({...a}))));
-  next.forEach((a,k)=>a.order=k+1);
-  await backend.save(FILE,next);
-  apps=next; users=d.users; render(); markSync(true); logLine("> registry updated · "+next.length+" modules","ok");
-}
-async function mutateUsers(fn){
-  const d=await backend.read();
-  const next=fn(d.users.map(u=>({...u})));
-  await backend.save(UFILE,next);
-  apps=d.apps; users=next; render(); markSync(true);
-}
-const store={
-  add:(a)=>mutate(l=>[...l,{...a,id:newId(),order:1e9}]),
-  update:(id,p)=>mutate(l=>l.map(a=>a.id===id?{...a,...p}:a)),
-  remove:(id)=>mutate(l=>l.filter(a=>a.id!==id)),
-  move:(id,dir)=>mutate(l=>{const i=l.findIndex(a=>a.id===id),j=i+dir;if(i<0||j<0||j>=l.length)return l;[l[i],l[j]]=[l[j],l[i]];return l.map((a,k)=>({...a,order:k+1}))})
-};
-async function reload(){
-  try{const d=await backend.read();apps=d.apps;users=d.users;render();markSync(true)}
-  catch(e){console.error(e);markSync(false);$("#count").textContent=e.status===404?"Gist not found — check GIST_ID.":"Could not load apps — check internet.";}
-}
-function saveError(err){
-  if(err&&err.code==="no_token") return "Add your GitHub token first in the GitHub token box at the top, then press Save token.";
-  const why = err&&err.gh ? ` (GitHub: ${err.gh}${err.scopes!=null?` · token permissions: ${err.scopes||"none"}`:""})` : "";
-  if(err&&err.status===401) return "GitHub did not accept this token. It may be deleted, expired or copied wrong."+why;
-  if(err&&err.status===403) return "This token is not allowed to edit gists. Make a new token with the gist box ticked."+why;
-  if(err&&err.status===404) return "Gist not found for this token. The token must be from the same GitHub account that owns the gist."+why;
-  return "Could not save. Check your internet and try again.";
-}
+const CONFIGURED = !!(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId && ADMIN_EMAIL);
+let app, auth, db, secAuth;
+let role=null, me=null, apps=[], priv={}, users=[], allowed=[];
+let editingId=null, editingUser=null, busy=false, unsubs=[];
 
 /* ---------------- helpers ---------------- */
+const pad=n=>String(n).padStart(2,"0");
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function host(u){try{return new URL(u).host.replace(/^www\./,"")}catch{return u}}
 function initials(n){const w=String(n).trim().split(/\s+/);return ((w[0]||"")[0]||"?").toUpperCase()+((w[1]||"")[0]||"").toUpperCase()}
 function normUrl(u){u=u.trim();if(!u)return "";if(!/^https?:\/\//i.test(u))u="https://"+u;try{const x=new URL(u);return (x.hostname.includes(".")||x.hostname==="localhost")?x.href:""}catch{return ""}}
-function msg(t,err){const m=$("#f-msg");m.textContent=t;m.classList.toggle("err",!!err)}
+const toEmail=u=>u.includes("@")?u.trim():`${u.trim().toLowerCase()}@${STAFF_DOMAIN}`;
+const isAdmin=()=>role==="admin";
+function setMsg(id,t,err){const m=$(id);m.textContent=t;m.classList.toggle("err",!!err)}
+function fbError(e){
+  const c=(e&&e.code)||"";
+  if(c.includes("invalid-credential")||c.includes("wrong-password")||c.includes("user-not-found")||c.includes("invalid-email")) return "Username or password is wrong.";
+  if(c.includes("api-key-not-valid")||c.includes("invalid-api-key")) return "Firebase apiKey is wrong. Copy it again from Firebase project settings into the file.";
+  if(c.includes("operation-not-allowed")) return "Email/Password login is not enabled in Firebase Authentication.";
+  if(c.includes("too-many-requests")) return "Too many tries. Wait a few minutes and try again.";
+  if(c.includes("email-already-in-use")) return "This username is already taken. Choose another.";
+  if(c.includes("weak-password")) return "Password must be at least 6 characters.";
+  if(c.includes("permission-denied")) return "Not allowed. Check the Firestore rules and ADMIN_EMAIL.";
+  if(c.includes("network")||c.includes("unavailable")) return "No internet connection. Try again.";
+  if(c.includes("requires-recent-login")) return "Please log out, log in again, then change the password.";
+  return "Something went wrong ("+(c||"unknown")+").";
+}
 
 /* ---------------- views ---------------- */
-function isUnlocked(){try{return sessionStorage.getItem("mwa.admin")==="1"}catch{return false}}
 function show(view){
+  if(view==="admin"&&!isAdmin()) view="apps";
   document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.view===view));
-  $("#view-apps").hidden=view!=="apps";
-  $("#view-admin").hidden=view!=="admin";
-  const ok=isUnlocked();
-  $("#lock").hidden=ok; $("#admin-body").hidden=!ok;
-  $("#local-banner").hidden=USE_GIST;
-  $("#token-panel").hidden=!USE_GIST;
-  $("#token-msg").textContent=getToken()?"Token saved in this browser.":"No token saved yet.";
-  if(view==="admin"&&!ok) setTimeout(()=>$("#pin").focus(),0);
-  try{ if(location.hash!=="#"+view) history.replaceState(null,"","#"+view); }catch(e){ /* preview window mein allowed nahi — ignore */ }
+  $("#view-apps").hidden=!role||view!=="apps";
+  $("#view-admin").hidden=!role||view!=="admin";
+  try{ if(role&&location.hash!=="#"+view) history.replaceState(null,"","#"+view) }catch{}
 }
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>show(t.dataset.view)));
-$("#pin-form").addEventListener("submit",e=>{
+function setLoggedOutUI(){
+  role=null;me=null;apps=[];priv={};users=[];allowed=[];
+  $("#gate").hidden=false;$("#who").hidden=true;$("#tabs").hidden=true;
+  $("#view-apps").hidden=true;$("#view-admin").hidden=true;
+}
+
+/* ---------------- login ---------------- */
+$("#gate-form").addEventListener("submit",async e=>{
   e.preventDefault();
-  if($("#pin").value===ADMIN_PIN){try{sessionStorage.setItem("mwa.admin","1")}catch{} if(!getSession())setSession({role:"admin"}); render(); $("#pin").value="";$("#pin-msg").textContent="";show("admin")}
-  else{$("#pin-msg").textContent="Wrong PIN. Try again.";$("#pin-msg").classList.add("err")}
+  const u=$("#g-user").value.trim(), p=$("#g-pass").value;
+  if(!u||!p) return setMsg("#g-msg","Enter username and password.",true);
+  $("#g-btn").disabled=true; setMsg("#g-msg","Checking…");
+  try{ await signInWithEmailAndPassword(auth,toEmail(u),p); $("#g-pass").value=""; setMsg("#g-msg","") }
+  catch(err){ setMsg("#g-msg",fbError(err),true) }
+  $("#g-btn").disabled=false;
 });
-$("#logout").addEventListener("click",()=>{try{sessionStorage.removeItem("mwa.admin")}catch{} show("apps")});
+$("#signout").addEventListener("click",()=>signOut(auth));
+
+/* change own password */
+$("#chpw-open").addEventListener("click",()=>{$("#chpw").hidden=false;setMsg("#c-msg","");$("#c-old").focus()});
+$("#chpw-close").addEventListener("click",()=>{$("#chpw").hidden=true;$("#chpw-form").reset()});
+$("#chpw-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const o=$("#c-old").value, n=$("#c-new").value;
+  if(n.length<6) return setMsg("#c-msg","New password must be at least 6 characters.",true);
+  try{
+    await reauthenticateWithCredential(auth.currentUser,EmailAuthProvider.credential(auth.currentUser.email,o));
+    await updatePassword(auth.currentUser,n);
+    $("#chpw-form").reset(); setMsg("#c-msg","Password changed.");
+  }catch(err){ setMsg("#c-msg",fbError(err),true) }
+});
+
+/* ---------------- data loading ---------------- */
+function stopAll(){unsubs.forEach(f=>{try{f()}catch{}});unsubs=[]}
+function sortApps(){apps.sort((a,b)=>(a.order||0)-(b.order||0))}
+function watchAdmin(){
+  unsubs.push(onSnapshot(collection(db,"apps"),s=>{apps=s.docs.map(d=>({id:d.id,...d.data()}));sortApps();render();markSync(true)},onErr));
+  unsubs.push(onSnapshot(collection(db,"appsPrivate"),s=>{priv={};s.docs.forEach(d=>priv[d.id]=d.data());render()},onErr));
+  unsubs.push(onSnapshot(collection(db,"users"),s=>{users=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.name.localeCompare(b.name));render()},onErr));
+}
+function watchEmployee(uid){
+  unsubs.push(onSnapshot(doc(db,"users",uid),async s=>{
+    if(!s.exists()){ setMsg("#g-msg","Your access was removed. Contact the admin.",true); signOut(auth); return }
+    const u=s.data(); me={id:uid,...u}; allowed=u.apps||[];
+    $("#who-name").textContent=(u.name||"").toUpperCase();
+    const got=await Promise.all(allowed.map(id=>getDoc(doc(db,"apps",id)).then(d=>d.exists()?{id:d.id,...d.data()}:null).catch(()=>null)));
+    apps=got.filter(Boolean); sortApps(); render(); markSync(true);
+  },onErr));
+}
+function onErr(e){console.error(e);markSync(false);logLine("> link error · "+fbError(e),"warn")}
 
 /* ---------------- render ---------------- */
-function visibleApps(){
-  const s=getSession();
-  if(!s) return [];
-  if(s.role==="admin") return apps;
-  const u=users.find(x=>x.id===s.id);
-  if(!u) return [];
-  return apps.filter(a=>(u.apps||[]).includes(a.id));
-}
+function render(){renderApps();if(isAdmin()){renderAdmin();renderUsers()}}
 function renderApps(){
-  const mine=visibleApps();
   const q=$("#search").value.trim().toLowerCase();
-  const isAdmin=getSession()?.role==="admin";
-  const list=mine.filter(a=>!q||(a.name+" "+(isAdmin?(a.desc||""):"")+" "+a.url).toLowerCase().includes(q));
+  const list=apps.filter(a=>!q||(a.name+" "+(isAdmin()?(priv[a.id]?.desc||""):"")+" "+a.url).toLowerCase().includes(q));
   const pwRow=(label,val,cls)=>`<div class="pw ${cls}"><span>${label}</span><code data-secret="${esc(val)}">••••••••</code><button type="button" data-pw="show">SHOW</button><button type="button" data-pw="copy">COPY</button></div>`;
-  $("#grid").innerHTML=list.map(a=>{const n=mine.indexOf(a)+1;return `
+  $("#grid").innerHTML=list.map(a=>{const n=apps.indexOf(a)+1;const p=isAdmin()?(priv[a.id]||{}):{};return `
     <div class="tile" style="animation-delay:${Math.min(n,12)*40}ms">
       <a class="open" href="${esc(a.url)}" target="_blank" rel="noopener">
-        <div class="top"><span>MOD-${String(n).padStart(2,"0")}</span><span class="on">ONLINE</span></div>
+        <div class="top"><span>MOD-${pad(n)}</span><span class="on">ONLINE</span></div>
         <div class="glyph">${esc(initials(a.name))}</div>
         <h3>${esc(a.name)}</h3>
-        ${isAdmin&&a.desc?`<p>${esc(a.desc)}</p>`:""}
+        ${p.desc?`<p>${esc(p.desc)}</p>`:""}
       </a>
       ${a.empPass?pwRow("EMP PASS",a.empPass,""):""}
-      ${isAdmin&&a.adminPass?pwRow("ADMIN PASS",a.adminPass,"admin-pw"):""}
+      ${p.adminPass?pwRow("ADMIN PASS",p.adminPass,"admin-pw"):""}
       <div class="host"><span>${esc(host(a.url))}</span><a href="${esc(a.url)}" target="_blank" rel="noopener">LAUNCH ▸</a></div>
     </div>`}).join("");
-  $("#empty-apps").hidden=mine.length>0;
-  $("#empty-text").textContent=getSession()?.role==="admin"?"Open the Admin tab and add your first app with its name and link.":"No apps are assigned to you yet. Ask the admin to give you access.";
-  $("#count").textContent=mine.length?(q?`${list.length} / ${mine.length} MATCH`:`${mine.length} MODULE${mine.length>1?"S":""}`):"0 MODULES";
-  hudCount();
+  $("#empty-apps").hidden=apps.length>0;
+  $("#empty-text").textContent=isAdmin()?"Open the Admin tab and add your first app.":"No apps are assigned to you yet. Ask the admin to give you access.";
+  $("#count").textContent=apps.length?(q?`${list.length} / ${apps.length} MATCH`:`${apps.length} MODULE${apps.length>1?"S":""}`):"0 MODULES";
+  $("#mod-count").textContent=pad(apps.length);
 }
 function renderAdmin(){
-  $("#list").innerHTML=apps.map((a,i)=>`
+  $("#list").innerHTML=apps.map((a,i)=>{const p=priv[a.id]||{};return `
     <div class="item${a.id===editingId?" editing":""}" data-id="${esc(a.id)}">
       <span class="pos">${i+1}</span>
-      <div style="min-width:0"><b>${esc(a.name)}</b><small>${esc(a.url)}</small>${(a.empPass||a.adminPass||a.desc)?`<div class="flags">${a.desc?"<i>NOTE</i>":""}${a.empPass?"<i>EMP PASS</i>":""}${a.adminPass?'<i class="amb">ADMIN PASS</i>':""}</div>`:""}</div>
+      <div style="min-width:0"><b>${esc(a.name)}</b><small>${esc(a.url)}</small>${(a.empPass||p.adminPass||p.desc)?`<div class="flags">${p.desc?"<i>NOTE</i>":""}${a.empPass?"<i>EMP PASS</i>":""}${p.adminPass?'<i class="amb">ADMIN PASS</i>':""}</div>`:""}</div>
       <div class="row">
         <button class="btn sm" data-act="up" ${i===0?"disabled":""} aria-label="Move up">↑</button>
         <button class="btn sm" data-act="down" ${i===apps.length-1?"disabled":""} aria-label="Move down">↓</button>
         <button class="btn sm" data-act="edit">Edit</button>
         <button class="btn sm danger" data-act="del">Delete</button>
       </div>
-    </div>`).join("");
+    </div>`}).join("");
   $("#empty-admin").hidden=apps.length>0;
+  $("#import-gist").hidden=!(OLD_GIST_ID&&apps.length===0);
 }
-function render(){renderApps();renderAdmin();renderUsers();renderGate()}
+function renderUsers(){
+  const box=$("#u-apps");
+  const chosen=new Set([...box.querySelectorAll("input:checked")].map(i=>i.value));
+  if(editingUser&&!box.dataset.filled){const u=users.find(x=>x.id===editingUser);(u?.apps||[]).forEach(id=>chosen.add(id))}
+  box.innerHTML=apps.length?apps.map(a=>`<label class="chk"><input type="checkbox" value="${esc(a.id)}" ${chosen.has(a.id)?"checked":""}><span>${esc(a.name)}</span></label>`).join(""):`<span class="note" style="margin:0">Add apps first.</span>`;
+  box.dataset.filled="1";
+  $("#u-list").innerHTML=users.map(u=>{
+    const names=apps.filter(a=>(u.apps||[]).includes(a.id)).map(a=>`<i>${esc(a.name)}</i>`).join("");
+    return `<div class="item${u.id===editingUser?" editing":""}" data-uid="${esc(u.id)}">
+      <span class="pos">◆</span>
+      <div style="min-width:0"><b>${esc(u.name)}</b><small>login: ${esc(u.username)}</small><div class="tags">${names||'<i class="none">no apps</i>'}</div></div>
+      <div class="row"><button class="btn sm" data-uact="edit">Edit</button><button class="btn sm danger" data-uact="del">Remove</button></div>
+    </div>`}).join("");
+  $("#empty-users").hidden=users.length>0;
+  $("#u-count").textContent=users.length+" REGISTERED";
+}
 $("#search").addEventListener("input",renderApps);
 
-/* ---------------- form ---------------- */
-function resetForm(){editingId=null;$("#form").reset();$("#form-title").textContent="Add app";$("#f-save").textContent="Add app";$("#f-cancel").hidden=true;renderAdmin()}
-$("#f-cancel").addEventListener("click",()=>{resetForm();msg("")});
-$("#form").addEventListener("submit",async e=>{
-  e.preventDefault(); if(busy)return;
-  const name=$("#f-name").value.trim(), url=normUrl($("#f-url").value), desc=$("#f-desc").value.trim(), empPass=$("#f-epass").value, adminPass=$("#f-apass").value;
-  if(!name) return msg("Enter the app name.",true);
-  if(!url) return msg("Enter a valid link, like https://example.com/app",true);
-  busy=true;$("#f-save").disabled=true;
-  try{
-    if(editingId){await store.update(editingId,{name,url,desc,empPass,adminPass});msg(`Saved “${name}”.`);resetForm()}
-    else{await store.add({name,url,desc,empPass,adminPass});$("#form").reset();msg(`Added “${name}”.`)}
-  }catch(err){console.error(err);msg(saveError(err),true)}
-  busy=false;$("#f-save").disabled=false;
-});
-
-/* ---------------- list actions ---------------- */
-let armed=null,armTimer=null;
-$("#list").addEventListener("click",async e=>{
-  const b=e.target.closest("button[data-act]"); if(!b||busy)return;
-  const id=b.closest(".item").dataset.id, i=apps.findIndex(a=>a.id===id), a=apps[i], act=b.dataset.act;
-  if(act==="edit"){
-    editingId=id;$("#f-name").value=a.name;$("#f-url").value=a.url;$("#f-desc").value=a.desc||"";$("#f-epass").value=a.empPass||"";$("#f-apass").value=a.adminPass||"";
-    $("#form-title").textContent="Edit app";$("#f-save").textContent="Save changes";$("#f-cancel").hidden=false;
-    msg("");renderAdmin();$("#f-name").focus();return;
-  }
-  if(act==="del"){
-    if(armed!==b){
-      if(armed){armed.classList.remove("armed");armed.textContent="Delete"}
-      armed=b;b.classList.add("armed");b.textContent="Confirm";
-      clearTimeout(armTimer);armTimer=setTimeout(()=>{b.classList.remove("armed");b.textContent="Delete";armed=null},4000);
-      return;
-    }
-    armed=null;busy=true;
-    try{await store.remove(id);if(editingId===id)resetForm();msg(`Deleted “${a.name}”.`)}
-    catch(err){console.error(err);msg(saveError(err),true)}
-    busy=false;return;
-  }
-  busy=true;
-  try{await store.move(id,act==="up"?-1:1)}
-  catch(err){console.error(err);msg(saveError(err),true)}
-  busy=false;
-});
-
-/* ---------------- GitHub token (only this browser) ---------------- */
-$("#token-form").addEventListener("submit",e=>{
-  e.preventDefault();
-  const t=$("#gh-token").value.trim();
-  if(!t){$("#token-msg").textContent="Paste the token first.";return}
-  try{localStorage.setItem(TOKEN_KEY,t.replace(/\s+/g,""));$("#gh-token").value="";$("#token-msg").textContent="Token saved in this browser."}
-  catch{$("#token-msg").textContent="This browser blocked saving. Try a normal (not private) window."}
-});
-$("#token-clear").addEventListener("click",()=>{try{localStorage.removeItem(TOKEN_KEY)}catch{} $("#token-msg").textContent="Token removed from this browser."});
-
-
-/* ---------------- password show / copy ---------------- */
+/* password show / copy */
 $("#grid").addEventListener("click",async e=>{
   const b=e.target.closest("button[data-pw]"); if(!b)return;
   const code=b.parentElement.querySelector("code"), val=code.dataset.secret;
-  if(b.dataset.pw==="show"){
-    const hidden=code.textContent==="••••••••";
-    code.textContent=hidden?val:"••••••••"; b.textContent=hidden?"HIDE":"SHOW";
-  }else{
+  if(b.dataset.pw==="show"){const h=code.textContent==="••••••••";code.textContent=h?val:"••••••••";b.textContent=h?"HIDE":"SHOW"}
+  else{
     try{await navigator.clipboard.writeText(val);b.textContent="COPIED"}
     catch{code.textContent=val;const r=document.createRange();r.selectNodeContents(code);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="SELECTED"}
     setTimeout(()=>b.textContent="COPY",1500);
   }
 });
 
-/* ---------------- employee login ---------------- */
-async function hashPin(pin){
-  const data=new TextEncoder().encode("mwa:"+pin);
-  const buf=await crypto.subtle.digest("SHA-256",data);
-  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+/* ---------------- admin: apps ---------------- */
+function resetForm(){editingId=null;$("#form").reset();$("#form-title").textContent="Add app";$("#f-save").textContent="Add app";$("#f-cancel").hidden=true;renderAdmin()}
+$("#f-cancel").addEventListener("click",()=>{resetForm();setMsg("#f-msg","")});
+async function saveApp(id,pub,pri){
+  const b=writeBatch(db);
+  b.set(doc(db,"apps",id),pub,{merge:true});
+  b.set(doc(db,"appsPrivate",id),pri,{merge:true});
+  await b.commit();
 }
-function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY))}catch{return null}}
-function setSession(s){try{s?localStorage.setItem(SESSION_KEY,JSON.stringify(s)):localStorage.removeItem(SESSION_KEY)}catch{}}
-function renderGate(){
-  const s=getSession();
-  let name=null;
-  if(s&&s.role==="admin") name="ADMIN";
-  else if(s){const u=users.find(x=>x.id===s.id); name=u?u.name.toUpperCase():null}
-  const loggedIn=!!name;
-  $("#gate").hidden=loggedIn; $("#deck").hidden=!loggedIn;
-  $("#who").hidden=!loggedIn; $("#who-name").textContent=name||"—";
-  document.querySelector('.tab[data-view="admin"]').hidden = !!(s&&s.role==="employee"&&loggedIn);
-}
-$("#gate-form").addEventListener("submit",async e=>{
-  e.preventDefault();
-  const name=$("#g-name").value.trim(), pin=$("#g-pin").value.trim(), m=$("#g-msg");
-  m.classList.add("err");
-  if(!pin){m.textContent="Enter your PIN.";return}
-  if(pin===ADMIN_PIN&&(!name||/^admin$/i.test(name))){setSession({role:"admin"})}
-  else{
-    if(!name){m.textContent="Enter your name.";return}
-    const hsh=await hashPin(pin);
-    const u=users.find(x=>x.name.trim().toLowerCase()===name.toLowerCase()&&x.pinHash===hsh);
-    if(!u){m.textContent="Name or PIN is wrong. Check with the admin.";return}
-    setSession({role:"employee",id:u.id});
-  }
-  $("#g-pin").value="";m.textContent="";
-  render(); logLine("> identity confirmed · "+($("#who-name").textContent),"ok");
+$("#form").addEventListener("submit",async e=>{
+  e.preventDefault(); if(busy)return;
+  const name=$("#f-name").value.trim(), url=normUrl($("#f-url").value);
+  const desc=$("#f-desc").value.trim(), empPass=$("#f-epass").value, adminPass=$("#f-apass").value;
+  if(!name) return setMsg("#f-msg","Enter the app name.",true);
+  if(!url) return setMsg("#f-msg","Enter a valid link, like https://example.com/app",true);
+  busy=true;$("#f-save").disabled=true;
+  try{
+    if(editingId){await saveApp(editingId,{name,url,empPass},{desc,adminPass});setMsg("#f-msg",`Saved “${name}”.`);resetForm()}
+    else{const id=doc(collection(db,"apps")).id;const order=apps.reduce((m,a)=>Math.max(m,a.order||0),0)+1;
+      await saveApp(id,{name,url,empPass,order},{desc,adminPass});$("#form").reset();setMsg("#f-msg",`Added “${name}”.`);logLine("> module registered · "+name,"ok")}
+  }catch(err){console.error(err);setMsg("#f-msg",fbError(err),true)}
+  busy=false;$("#f-save").disabled=false;
 });
-$("#signout").addEventListener("click",()=>{setSession(null);try{sessionStorage.removeItem("mwa.admin")}catch{} $("#g-name").value="";show("apps");render()});
-
-/* ---------------- employees admin ---------------- */
-function renderUsers(){
-  const chosen=new Set([...document.querySelectorAll("#u-apps input:checked")].map(i=>i.value));
-  if(editingUser&&!$("#u-apps").dataset.filled){const u=users.find(x=>x.id===editingUser);(u?.apps||[]).forEach(id=>chosen.add(id))}
-  $("#u-apps").innerHTML=apps.length?apps.map(a=>`<label class="chk"><input type="checkbox" value="${esc(a.id)}" ${chosen.has(a.id)?"checked":""}><span>${esc(a.name)}</span></label>`).join(""):`<span class="note" style="margin:0">Add apps first.</span>`;
-  $("#u-apps").dataset.filled="1";
-  $("#u-list").innerHTML=users.map(u=>{
-    const names=apps.filter(a=>(u.apps||[]).includes(a.id)).map(a=>`<i>${esc(a.name)}</i>`).join("");
-    return `<div class="item${u.id===editingUser?" editing":""}" data-uid="${esc(u.id)}">
-      <span class="pos">◆</span>
-      <div style="min-width:0"><b>${esc(u.name)}</b><div class="tags">${names||'<i class="none">no apps</i>'}</div></div>
-      <div class="row"><button class="btn sm" data-uact="edit">Edit</button><button class="btn sm danger" data-uact="del">Delete</button></div>
-    </div>`}).join("");
-  $("#empty-users").hidden=users.length>0;
-  $("#u-count").textContent=users.length+" REGISTERED";
+let armed=null,armTimer=null;
+function arm(b,label){
+  if(armed===b) return true;
+  if(armed){armed.classList.remove("armed");armed.textContent=armed.dataset.label}
+  b.dataset.label=label;armed=b;b.classList.add("armed");b.textContent="Confirm";
+  clearTimeout(armTimer);armTimer=setTimeout(()=>{b.classList.remove("armed");b.textContent=label;armed=null},4000);
+  return false;
 }
-function umsg(t,err){const m=$("#u-msg");m.textContent=t;m.classList.toggle("err",!!err)}
-function resetUserForm(){editingUser=null;$("#u-form").reset();delete $("#u-apps").dataset.filled;$("#u-title").textContent="Add employee";$("#u-save").textContent="Add employee";$("#u-cancel").hidden=true;$("#u-pin-hint").textContent="(min 4 digits)";$("#u-apps").innerHTML="";renderUsers()}
-$("#u-cancel").addEventListener("click",()=>{resetUserForm();umsg("")});
+$("#list").addEventListener("click",async e=>{
+  const b=e.target.closest("button[data-act]"); if(!b||busy)return;
+  const id=b.closest(".item").dataset.id, i=apps.findIndex(a=>a.id===id), a=apps[i], p=priv[id]||{}, act=b.dataset.act;
+  if(act==="edit"){
+    editingId=id;$("#f-name").value=a.name;$("#f-url").value=a.url;$("#f-desc").value=p.desc||"";$("#f-epass").value=a.empPass||"";$("#f-apass").value=p.adminPass||"";
+    $("#form-title").textContent="Edit app";$("#f-save").textContent="Save changes";$("#f-cancel").hidden=false;
+    setMsg("#f-msg","");renderAdmin();$("#f-name").focus();return;
+  }
+  if(act==="del"){
+    if(!arm(b,"Delete"))return; armed=null;busy=true;
+    try{const w=writeBatch(db);w.delete(doc(db,"apps",id));w.delete(doc(db,"appsPrivate",id));await w.commit();if(editingId===id)resetForm();setMsg("#f-msg",`Deleted “${a.name}”.`)}
+    catch(err){setMsg("#f-msg",fbError(err),true)}
+    busy=false;return;
+  }
+  const j=act==="up"?i-1:i+1; if(j<0||j>=apps.length)return;
+  busy=true;
+  try{
+    const list=apps.slice();[list[i],list[j]]=[list[j],list[i]];
+    const w=writeBatch(db);list.forEach((x,k)=>{if(x.order!==k+1)w.update(doc(db,"apps",x.id),{order:k+1})});await w.commit();
+  }catch(err){setMsg("#f-msg",fbError(err),true)}
+  busy=false;
+});
+/* one-time import from the old Gist launcher */
+$("#import-gist").addEventListener("click",async()=>{
+  if(busy)return; busy=true; setMsg("#f-msg","Importing from Gist…");
+  try{
+    const r=await fetch("https://api.github.com/gists/"+encodeURIComponent(OLD_GIST_ID),{cache:"no-store"});
+    if(!r.ok) throw new Error("gist "+r.status);
+    const g=await r.json(); const list=JSON.parse(g.files?.["apps.json"]?.content||"[]");
+    const w=writeBatch(db); let n=0;
+    list.sort((a,b)=>(a.order||0)-(b.order||0)).forEach((a,k)=>{
+      if(!a||!a.name||!a.url) return;
+      const id=doc(collection(db,"apps")).id; n++;
+      w.set(doc(db,"apps",id),{name:a.name,url:a.url,empPass:a.empPass||"",order:k+1});
+      w.set(doc(db,"appsPrivate",id),{desc:a.desc||"",adminPass:a.adminPass||""});
+    });
+    await w.commit(); setMsg("#f-msg",`Imported ${n} apps. Employees must be added again below.`);
+  }catch(err){console.error(err);setMsg("#f-msg","Could not import from Gist. Add the apps by hand.",true)}
+  busy=false;
+});
+
+/* ---------------- admin: employees ---------------- */
+function resetUserForm(){editingUser=null;$("#u-form").reset();delete $("#u-apps").dataset.filled;$("#u-apps").innerHTML="";
+  $("#u-title").textContent="Add employee";$("#u-save").textContent="Add employee";$("#u-cancel").hidden=true;
+  $("#u-user").disabled=false;$("#u-pass-wrap").hidden=false;renderUsers()}
+$("#u-cancel").addEventListener("click",()=>{resetUserForm();setMsg("#u-msg","")});
 $("#u-form").addEventListener("submit",async e=>{
   e.preventDefault(); if(busy)return;
-  const name=$("#u-name").value.trim(), pin=$("#u-pin").value.trim();
+  const name=$("#u-name").value.trim(), username=$("#u-user").value.trim().toLowerCase(), pass=$("#u-pass").value;
   const picked=[...document.querySelectorAll("#u-apps input:checked")].map(i=>i.value);
-  if(!name) return umsg("Enter the employee name.",true);
-  if(/^admin$/i.test(name)) return umsg("Choose a name other than Admin.",true);
-  if(users.some(u=>u.id!==editingUser&&u.name.trim().toLowerCase()===name.toLowerCase())) return umsg("An employee with this name already exists.",true);
-  if(!editingUser&&pin.length<4) return umsg("PIN must be at least 4 digits.",true);
-  if(editingUser&&pin&&pin.length<4) return umsg("PIN must be at least 4 digits.",true);
-  if(pin&&pin===ADMIN_PIN) return umsg("This PIN is the admin PIN. Choose another.",true);
+  if(!name) return setMsg("#u-msg","Enter the employee name.",true);
   busy=true;$("#u-save").disabled=true;
   try{
-    const pinHash=pin?await hashPin(pin):null;
     if(editingUser){
-      await mutateUsers(l=>l.map(u=>u.id===editingUser?{...u,name,apps:picked,...(pinHash?{pinHash}:{})}:u));
-      umsg(`Saved ${name}.`);resetUserForm();
+      await updateDoc(doc(db,"users",editingUser),{name,apps:picked});
+      setMsg("#u-msg",`Saved ${name}.`);resetUserForm();
     }else{
-      await mutateUsers(l=>[...l,{id:newId(),name,pinHash,apps:picked}]);
-      umsg(`Added ${name}. Tell them their name and PIN.`);resetUserForm();
+      if(!/^[a-z0-9._-]{3,30}$/.test(username)) throw {code:"x",msg:"Username: 3–30 small letters or numbers, no spaces."};
+      if(pass.length<6) throw {code:"x",msg:"Password must be at least 6 characters."};
+      const cred=await createUserWithEmailAndPassword(secAuth,toEmail(username),pass);
+      await signOut(secAuth);
+      await setDoc(doc(db,"users",cred.user.uid),{name,username,apps:picked});
+      setMsg("#u-msg",`Added ${name}. Login: ${username} + the password you set.`);resetUserForm();
     }
-  }catch(err){console.error(err);umsg(saveError(err),true)}
+  }catch(err){console.error(err);setMsg("#u-msg",err.msg||fbError(err),true)}
   busy=false;$("#u-save").disabled=false;
 });
-let uArmed=null,uTimer=null;
 $("#u-list").addEventListener("click",async e=>{
   const b=e.target.closest("button[data-uact]"); if(!b||busy)return;
   const id=b.closest(".item").dataset.uid, u=users.find(x=>x.id===id); if(!u)return;
   if(b.dataset.uact==="edit"){
     editingUser=id; delete $("#u-apps").dataset.filled; $("#u-apps").innerHTML="";
-    $("#u-name").value=u.name;$("#u-pin").value="";
+    $("#u-name").value=u.name;$("#u-user").value=u.username;$("#u-user").disabled=true;$("#u-pass-wrap").hidden=true;
     $("#u-title").textContent="Edit employee";$("#u-save").textContent="Save changes";$("#u-cancel").hidden=false;
-    $("#u-pin-hint").textContent="(leave empty to keep old PIN)";
-    umsg("");renderUsers();$("#u-name").focus();return;
+    setMsg("#u-msg","");renderUsers();$("#u-name").focus();return;
   }
-  if(uArmed!==b){
-    if(uArmed){uArmed.classList.remove("armed");uArmed.textContent="Delete"}
-    uArmed=b;b.classList.add("armed");b.textContent="Confirm";
-    clearTimeout(uTimer);uTimer=setTimeout(()=>{b.classList.remove("armed");b.textContent="Delete";uArmed=null},4000);
-    return;
-  }
-  uArmed=null;busy=true;
-  try{await mutateUsers(l=>l.filter(x=>x.id!==id));if(editingUser===id)resetUserForm();umsg(`Deleted ${u.name}.`)}
-  catch(err){console.error(err);umsg(saveError(err),true)}
+  if(!arm(b,"Remove"))return; armed=null;busy=true;
+  try{await deleteDoc(doc(db,"users",id));if(editingUser===id)resetUserForm();setMsg("#u-msg",`Removed ${u.name}. They can no longer see any app.`)}
+  catch(err){setMsg("#u-msg",fbError(err),true)}
   busy=false;
 });
 
-/* ---------------- HUD: clock, reactor, log, stats ---------------- */
-const pad=n=>String(n).padStart(2,"0");
-const t0=Date.now();
-let syncedAt=null, booted=false, pendingLines=[];
+/* ---------------- HUD ---------------- */
+const t0=Date.now(); let syncedAt=null, booted=false, pending=[];
 function tick(){
   const d=new Date();
   $("#clk").textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   $("#dt").textContent=d.toLocaleDateString("en-IN",{weekday:"short",day:"2-digit",month:"short",year:"numeric"}).toUpperCase();
   const s=Math.floor((Date.now()-t0)/1000);
-  $("#st-up").textContent=`${pad(Math.floor(s/60))}:${pad(s%60)}`;
-  $("#m3").style.width=Math.min(100,(s%60)/60*100)+"%";
+  $("#st-up").textContent=`${pad(Math.floor(s/60))}:${pad(s%60)}`; $("#m3").style.width=((s%60)/60*100)+"%";
   if(syncedAt){const ago=Math.floor((Date.now()-syncedAt)/1000);$("#st-sync").textContent=ago<5?"NOW":ago<60?ago+"s AGO":Math.floor(ago/60)+"m AGO"}
   $("#log-time").textContent=$("#clk").textContent;
 }
-(function ticks(){
-  const g=$("#ticks"); let h="";
-  for(let i=0;i<60;i++){const a=i*6*Math.PI/180, r1=i%5?150:146, r2=156;
-    h+=`<line x1="${160+r1*Math.cos(a)}" y1="${160+r1*Math.sin(a)}" x2="${160+r2*Math.cos(a)}" y2="${160+r2*Math.sin(a)}" stroke="#4FE3FF" stroke-opacity="${i%5?.35:.9}" stroke-width="${i%5?1:2}"/>`}
-  g.innerHTML=h;
-})();
-function hudCount(){$("#mod-count").textContent=pad(visibleApps().length)}
+(function(){let h="";for(let i=0;i<60;i++){const a=i*6*Math.PI/180,r1=i%5?150:146,r2=156;
+  h+=`<line x1="${160+r1*Math.cos(a)}" y1="${160+r1*Math.sin(a)}" x2="${160+r2*Math.cos(a)}" y2="${160+r2*Math.sin(a)}" stroke="#4FE3FF" stroke-opacity="${i%5?.35:.9}" stroke-width="${i%5?1:2}"/>`}
+  $("#ticks").innerHTML=h})();
 function markSync(ok){
   if(ok){syncedAt=Date.now();$("#m2").style.width="100%"}
   $("#st-net").textContent=ok?"STABLE":"OFFLINE";$("#m4").style.width=ok?"92%":"8%";
-  $("#sys-state").textContent=ok?"SYSTEM ONLINE":"LINK LOST";
-  $("#sys-state").parentElement.style.color=ok?"":"var(--red)";
+  $("#sys-state").textContent=ok?"SYSTEM ONLINE":"LINK LOST";$("#sys-state").parentElement.style.color=ok?"":"var(--red)";
 }
 function logLine(text,cls){
-  if(!booted){pendingLines.push([text,cls]);return}
-  const log=$("#log"), caret=log.querySelector(".caret"); if(caret)caret.remove();
-  const div=document.createElement("div"); div.className=cls||""; div.textContent=text; log.appendChild(div);
-  while(log.children.length>8) log.removeChild(log.firstChild);
+  if(!booted){pending.push([text,cls]);return}
+  const log=$("#log");log.querySelector(".caret")?.remove();
+  const d=document.createElement("div");d.className=cls||"";d.textContent=text;log.appendChild(d);
+  while(log.children.length>8)log.removeChild(log.firstChild);
   const c=document.createElement("span");c.className="caret";log.appendChild(c);
 }
 async function boot(){
-  const log=$("#log");
-  const lines=[
-    ["> initializing command deck…","dim"],
-    ["> loading interface modules ......... OK","ok"],
-    [USE_GIST?"> linking gist storage ............. OK":"> local storage mode (this browser)", USE_GIST?"ok":"warn"],
-    ["> scanning app registry…","dim"]
-  ];
-  $("#st-store").textContent=USE_GIST?"GIST":"LOCAL"; $("#m1").style.width=USE_GIST?"100%":"40%";
+  const log=$("#log"); log.innerHTML="";
+  const lines=[["> initializing command deck…","dim"],["> loading interface modules ......... OK","ok"],["> secure link: firebase ............ OK","ok"],["> verifying identity…","dim"]];
   const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
-  for(const [t,c] of lines){
-    const div=document.createElement("div");div.className=c;log.appendChild(div);
-    if(reduce){div.textContent=t;continue}
-    for(let k=1;k<=t.length;k++){div.textContent=t.slice(0,k);await new Promise(r=>setTimeout(r,12))}
-    await new Promise(r=>setTimeout(r,120));
-  }
-  booted=true;
-  const c=document.createElement("span");c.className="caret";log.appendChild(c);
-  pendingLines.forEach(([t,c])=>logLine(t,c)); pendingLines=[];
+  for(const [t,c] of lines){const d=document.createElement("div");d.className=c;log.appendChild(d);
+    if(reduce){d.textContent=t;continue}
+    for(let k=1;k<=t.length;k++){d.textContent=t.slice(0,k);await new Promise(r=>setTimeout(r,10))}
+    await new Promise(r=>setTimeout(r,100))}
+  booted=true;const c=document.createElement("span");c.className="caret";log.appendChild(c);
+  pending.forEach(([t,c])=>logLine(t,c));pending=[];
 }
-tick(); setInterval(tick,1000); boot();
+tick(); setInterval(tick,1000);
 
 /* ---------------- start ---------------- */
-show(location.hash==="#admin"?"admin":"apps");
-renderGate();
-reload().then(()=>{const n=visibleApps().length;logLine(getSession()?(n?`> ${n} modules online · all systems nominal`:"> no modules assigned"):"> awaiting identification…",n?"ok":"warn")});
+window.__deckReady=true;
+if(!CONFIGURED){
+  $("#setup").hidden=false; $("#sys-state").textContent="SETUP NEEDED";
+}else{
+  app=initializeApp(FIREBASE_CONFIG);
+  auth=getAuth(app); db=getFirestore(app);
+  secAuth=getAuth(initializeApp(FIREBASE_CONFIG,"staff-creator"));  /* creates employee logins without logging the admin out */
+  $("#m1").style.width="100%";
+  onAuthStateChanged(auth,async user=>{
+    stopAll(); booted=false; pending=[];
+    if(!user){ setLoggedOutUI(); $("#sys-state").textContent="LOCKED"; return }
+    $("#gate").hidden=true; $("#who").hidden=false;
+    role = (user.email||"").toLowerCase()===ADMIN_EMAIL.toLowerCase() ? "admin" : "employee";
+    $("#tabs").hidden=!isAdmin();
+    $("#who-name").textContent=isAdmin()?"ADMIN":"…";
+    show(isAdmin()&&location.hash==="#admin"?"admin":"apps");
+    boot();
+    if(isAdmin()){watchAdmin(); logLine("> identity confirmed · ADMIN","ok")}
+    else{watchEmployee(user.uid); logLine("> identity confirmed","ok")}
+  });
+}
+</script>
+<script>
+/* If Firebase could not load (no internet / blocked), say so instead of a blank page */
+setTimeout(function(){
+  if(window.__deckReady) return;
+  var g=document.getElementById("setup");
+  g.querySelector("h2").innerHTML='Cannot connect <em>OFFLINE</em>';
+  g.querySelector("ol").innerHTML='<li>Firebase could not load. Check your internet connection.</li><li>Then reload this page.</li>';
+  g.hidden=false; document.getElementById("sys-state").textContent="LINK LOST";
+},8000);
 </script>
 </body>
 </html>
