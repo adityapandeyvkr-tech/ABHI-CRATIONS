@@ -188,21 +188,6 @@ label em{font-style:normal;opacity:.7}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style><style>
 .setup{max-width:640px;margin:48px auto 0}
-.cam{position:relative;width:100%;aspect-ratio:4/3;max-width:100%;background:#020A10;border:1px solid var(--line);overflow:hidden;margin-bottom:4px}
-.cam video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:block;filter:saturate(.6) contrast(1.1)}
-.cam::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(79,227,255,.12),rgba(79,227,255,.04));mix-blend-mode:screen;pointer-events:none}
-.cam .frame{position:absolute;inset:14% 22%;border:1px solid rgba(79,227,255,.35);pointer-events:none}
-.cam .frame::before,.cam .frame::after{content:"";position:absolute;width:22px;height:22px;border:2px solid var(--cyan)}
-.cam .frame::before{top:-2px;left:-2px;border-right:0;border-bottom:0}
-.cam .frame::after{bottom:-2px;right:-2px;border-left:0;border-top:0}
-.cam .scan{position:absolute;left:0;right:0;height:2px;background:var(--cyan);box-shadow:0 0 14px var(--cyan);top:10%;animation:scan 2.6s ease-in-out infinite alternate;pointer-events:none}
-.cam .tag{position:absolute;left:8px;bottom:6px;font-family:var(--f-code);font-size:11px;letter-spacing:.2em;color:var(--cyan);text-shadow:0 0 6px #000}
-.cam .tag i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);margin-right:6px;animation:blink 1s infinite}
-.cam .off{position:absolute;inset:0;display:grid;place-content:center;gap:10px;text-align:center;font-family:var(--f-code);font-size:12px;letter-spacing:.14em;color:var(--muted);padding:12px}
-.cam.ok .off{display:none}
-.cam.ok.verified .scan{animation:none;top:auto;bottom:0;background:#5CFFB0;box-shadow:0 0 14px #5CFFB0}
-.cam.verified .frame{border-color:#5CFFB0}
-@keyframes scan{to{top:88%}}
 .setup ol{font-family:var(--f-code);font-size:13.5px;line-height:1.8;color:var(--text);padding-left:20px;margin:0}
 .modal{position:fixed;inset:0;z-index:60;background:rgba(1,6,10,.82);display:grid;place-items:center;padding:16px}
 .modal .hud{width:100%;max-width:400px}
@@ -239,12 +224,6 @@ label em{font-style:normal;opacity:.7}
   <!-- login -->
   <div class="hud lock" id="gate" hidden>
     <h2>Identify <em>ACCESS REQUIRED</em></h2>
-    <div class="cam" id="cam">
-      <video id="cam-video" autoplay muted playsinline></video>
-      <div class="frame"></div><div class="scan"></div>
-      <div class="tag" id="cam-tag"><i></i>FACE SCAN</div>
-      <div class="off" id="cam-off"><span id="cam-off-text">CAMERA OFF</span><button class="btn sm" id="cam-start" type="button">Turn on camera</button></div>
-    </div>
     <form id="gate-form">
       <label for="g-user">Username<input id="g-user" autocomplete="username" placeholder="e.g. rahul (admin: your email)"></label>
       <label for="g-pass">Password<input id="g-pass" type="password" autocomplete="current-password"></label>
@@ -410,30 +389,9 @@ function show(view){
   try{ if(role&&location.hash!=="#"+view) history.replaceState(null,"","#"+view) }catch{}
 }
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>show(t.dataset.view)));
-/* ---------------- login camera (live view only, nothing is saved) ---------------- */
-let camStream=null;
-async function startCam(){
-  const box=$("#cam"); box.classList.remove("verified");
-  if(camStream) return;
-  if(!navigator.mediaDevices?.getUserMedia){$("#cam-off-text").textContent="CAMERA NOT SUPPORTED";$("#cam-start").hidden=true;return}
-  try{
-    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:640},height:{ideal:480}},audio:false});
-    if($("#gate").hidden){stopCam();return}
-    $("#cam-video").srcObject=camStream; box.classList.add("ok"); $("#cam-tag").innerHTML="<i></i>FACE SCAN";
-  }catch(e){
-    camStream=null; box.classList.remove("ok");
-    $("#cam-off-text").textContent=(e&&e.name==="NotAllowedError")?"CAMERA BLOCKED · ALLOW IT IN BROWSER SETTINGS":"CAMERA NOT AVAILABLE";
-  }
-}
-function stopCam(){
-  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}
-  $("#cam-video").srcObject=null; $("#cam").classList.remove("ok","verified");
-}
-$("#cam-start").addEventListener("click",startCam);
 function setLoggedOutUI(){
   role=null;me=null;apps=[];priv={};users=[];allowed=[];
   $("#gate").hidden=false;$("#who").hidden=true;$("#tabs").hidden=true;
-  startCam();
   $("#view-apps").hidden=true;$("#view-admin").hidden=true;
 }
 
@@ -714,8 +672,6 @@ if(!CONFIGURED){
   onAuthStateChanged(auth,async user=>{
     stopAll(); booted=false; pending=[];
     if(!user){ setLoggedOutUI(); $("#sys-state").textContent="LOCKED"; return }
-    if(camStream){$("#cam").classList.add("verified");$("#cam-tag").innerHTML="IDENTITY VERIFIED";await new Promise(r=>setTimeout(r,700))}
-    stopCam();
     $("#gate").hidden=true; $("#who").hidden=false;
     role = (user.email||"").toLowerCase()===ADMIN_EMAIL.toLowerCase() ? "admin" : "employee";
     $("#tabs").hidden=!isAdmin();
