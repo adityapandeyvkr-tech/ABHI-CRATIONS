@@ -271,7 +271,7 @@ input[type=time]{color-scheme:light;padding:9px 8px}
 .cl summary::-webkit-details-marker{display:none}
 .cl summary::before{content:"▸ "}.cl[open] summary::before{content:"▾ "}
 .cl ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
-.cl li label{display:flex;gap:8px;align-items:center;text-transform:none;letter-spacing:0;font-family:var(--f-body);font-size:14px;color:var(--text);cursor:pointer}
+.cl li label{display:flex;gap:8px;align-items:center;text-transform:uppercase;letter-spacing:.06em;font-family:var(--f-code);font-size:13px;color:var(--text);cursor:pointer}
 .cl li input{width:16px;height:16px;padding:0;accent-color:#6FD8FF;flex:none}
 .cl li.dn label{font-weight:800;color:#FFFFFF;text-decoration:none}
 .clbar{display:inline-block;width:60px;height:4px;background:rgba(111,216,255,.15);vertical-align:middle;margin-left:6px}
@@ -330,10 +330,10 @@ input[type=date]{color-scheme:light;padding:9px 8px}
 .task{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px 12px;border:1px solid var(--line);border-left:3px solid var(--cyan-dim);background:rgba(10,30,90,.5)}
 .task.p-high{border-left-color:var(--red)}.task.p-med{border-left-color:var(--amber)}
 .task.done{border-left-color:var(--done)!important;background:rgba(40,120,90,.14)}
-.task.done .t-title{text-decoration:none;font-weight:800;color:#FFFFFF;letter-spacing:.01em}
+.task.done .t-title{text-decoration:none;font-weight:700;color:#FFFFFF;letter-spacing:.08em;text-shadow:0 0 .6px #fff,0 0 10px rgba(92,255,176,.35)}
 .task.done .t-title::after{content:"  ✓ COMPLETED";font-family:var(--f-code);font-size:11px;font-weight:400;letter-spacing:.14em;color:var(--done)}
 .task input[type=checkbox]{width:18px;height:18px;margin-top:2px;accent-color:#6FD8FF;padding:0}
-.t-title{display:block;font-family:var(--f-body);font-weight:600;font-size:16px;overflow-wrap:anywhere}
+.t-title{display:block;font-family:var(--f-code);font-weight:400;font-size:15.5px;letter-spacing:.08em;text-transform:uppercase;overflow-wrap:anywhere;color:var(--text)}
 .t-meta{display:flex;gap:8px;flex-wrap:wrap;font-family:var(--f-code);font-size:11.5px;letter-spacing:.08em;color:var(--muted);margin-top:2px}
 .t-meta .late{color:var(--red)}.t-meta .today{color:var(--amber)}
 .notes{display:grid;gap:10px}
@@ -865,7 +865,7 @@ function renderTasks(){
         <div class="t-meta">${t.firm?`<span class="firm">${esc(t.firm)}</span>`:""}${isAdmin()&&t.assignedTo?`<span class="who">→ ${esc(userName(t.assignedTo).toUpperCase())}</span>`:""}<span>${(t.prio||"med").toUpperCase()}</span>${daily?`<span class="rep">↻ EVERY DAY</span>`:""}${!daily&&t.due?`<span class="${late?"late":isToday?"today":""}">${late?"LATE · ":isToday?"TODAY · ":"DUE "}${fmtDate(t.due)}</span>`:""}${t.remindAt?`<span>⏰ ${fmtTime(t.remindAt)}</span>`:""}${rs?`<span class="rs${rs>=3?" bad":""}">${rs>=3?"⚠ TOO LATE · ":"↻ "}RESCHEDULED ${rs}x</span>`:""}${sk?`<span class="rs">SKIPPED TODAY</span>`:""}${dn&&t.doneAt?`<span>DONE ${fmtStamp(t.doneAt)}</span>`:""}</div>
         ${cs.n?`<details class="cl" ${openCL.has(t.id)?"open":""} data-cl="${esc(t.id)}"><summary>☑ ${cs.d}/${cs.n} STEPS <span class="clbar"><i style="width:${Math.round(cs.d/cs.n*100)}%"></i></span></summary><ul>${t.checklist.map((c,i)=>`<li class="${c.d?"dn":""}"><label><input type="checkbox" data-step="${i}" ${c.d?"checked":""}><span>${esc(c.t)}</span></label></li>`).join("")}</ul></details>`:""}
       </div>
-      <div class="acts">${!dn&&!daily?`<button class="btn sm" type="button" data-tact="tmrw" title="Move to tomorrow">→ Tomorrow</button>`:""}${isAdmin()?`<button class="btn sm" type="button" data-tact="edit">Edit</button><button class="btn sm danger" type="button" data-tact="del">Delete</button>`:""}</div>
+      <div class="acts">${!dn&&!daily?`<button class="btn sm" type="button" data-tact="tmrw" title="Move to tomorrow">→ Tomorrow</button>`:""}${isAdmin()?`<button class="btn sm" type="button" data-tact="edit">Edit</button>`:""}</div>
     </div>`}).join("");
   $("#t-empty").hidden=list.length>0;
   $("#t-empty-text").textContent=taskFilter==="done"?"No finished tasks yet.":taskFilter==="today"?"Nothing due today or late.":taskFilter==="all"?(isEmp()?"No tasks assigned to you.":"No tasks yet. Use the Add Task page to add one."):(isEmp()?"No open tasks. You're all clear.":"No open tasks. Use the Add Task page to add one.");
@@ -954,7 +954,6 @@ async function onTaskClick(e){
   try{
     if(el.dataset.tact==="toggle"){ await setTaskDone(t,!isDone(t)) }
     else if(el.dataset.tact==="tmrw"){ await rescheduleTomorrow(t); setMsg("#t-list-msg",`Moved to tomorrow. Rescheduled ${(t.reschedules||0)+1}x.`,(t.reschedules||0)+1>=3) }
-    else if(el.dataset.tact==="del"){ if(!arm(el,"Delete"))return; armed=null; await deleteDoc(doc(db,"adminTasks",id)); if(editingTask===id) resetTaskForm() }
   }catch(err){setMsg(el.closest("#t-recent")?"#t-msg":"#t-list-msg",fbError(err),true)}
 }
 $("#t-list").addEventListener("click",onTaskClick);
