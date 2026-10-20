@@ -56,6 +56,28 @@ html{background:var(--void)}
 body{margin:0;min-height:100vh;color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.45;
   background:radial-gradient(ellipse 85% 70% at 50% 38%, #2A5FD6 0%, #163A9C 30%, #0B2268 58%, #061440 80%, #040B2B 100%) fixed, var(--void);
 }
+/* 3D section orbit (replaces the tab bar) */
+.tabs{display:none!important}
+.orbit{flex:1 1 100%;position:relative;height:310px;overflow:hidden;perspective:900px;perspective-origin:50% 30%;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;margin-top:4px}
+.orbit.dragging{cursor:grabbing}
+.orbit-ring{position:absolute;left:50%;top:38%;width:0;height:0;transform-style:preserve-3d;will-change:transform}
+.otile{position:absolute;width:132px;height:104px;left:-66px;top:-52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  border:1px solid rgba(140,200,255,.55);background:linear-gradient(160deg,rgba(60,130,255,.35),rgba(10,30,100,.75));color:var(--text);
+  font:700 11px var(--f-hud);letter-spacing:.16em;text-transform:uppercase;cursor:pointer;padding:0;
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  box-shadow:inset 0 0 22px rgba(110,190,255,.25);transition:background .2s,border-color .2s,color .2s}
+.otile svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.otile.front{background:linear-gradient(160deg,rgba(130,220,255,.95),rgba(40,120,255,.85));color:#03113A;border-color:#BFEFFF;box-shadow:0 0 30px rgba(120,210,255,.9),inset 0 0 18px rgba(255,255,255,.4)}
+.otile.current::after{content:"";position:absolute;left:18%;right:18%;bottom:8px;height:2px;background:currentColor;opacity:.8}
+.otile .ob{position:absolute;top:8px;right:10px;min-width:18px;padding:1px 5px;border-radius:9px;background:var(--amber);color:#1A1000;font:700 10px var(--f-code);letter-spacing:0}
+.otile:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.orbit-floor{position:absolute;left:50%;top:50%;width:var(--fl,460px);height:var(--fl,460px);margin:calc(var(--fl,460px)/-2) 0 0 calc(var(--fl,460px)/-2);border-radius:50%;
+  border:1px dashed rgba(130,200,255,.4);transform:rotateX(80deg);pointer-events:none;
+  background:radial-gradient(circle,rgba(110,190,255,.18),transparent 65%)}
+.orbit-hint{position:absolute;left:0;right:0;bottom:2px;text-align:center;font-family:var(--f-code);font-size:11px;letter-spacing:.16em;color:var(--muted);pointer-events:none}
+.orbit-arrows{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;pointer-events:none;padding:0 4px}
+.orbit-arrows button{pointer-events:auto;width:36px;height:36px;border:1px solid var(--line);background:rgba(10,30,90,.6);color:var(--cyan);font:700 18px var(--f-code);cursor:pointer}
+@media (max-width:560px){.orbit{height:270px}.otile{width:104px;height:84px;left:-52px;top:-42px;font-size:10px}.otile svg{width:24px;height:24px}.orbit-hint{font-size:9.5px;letter-spacing:.1em}}
 #bgfx{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block}
 .wrap{z-index:1}
 .hud{box-shadow:inset 0 0 40px rgba(80,160,255,.10),0 0 24px rgba(20,60,180,.25)}
@@ -374,6 +396,12 @@ input[type=date]{color-scheme:light;padding:9px 8px}
       <button class="tab" role="tab" aria-selected="false" data-view="admin">Admin</button>
     </nav>
     <div class="clock"><b id="clk">--:--:--</b><span id="dt">----</span></div>
+    <div class="orbit" id="orbit" hidden role="toolbar" aria-label="Sections — drag to spin, open the front tile">
+      <div class="orbit-floor"></div>
+      <div class="orbit-ring" id="orbit-ring"></div>
+      <div class="orbit-arrows"><button type="button" id="orbit-prev" aria-label="Previous section">‹</button><button type="button" id="orbit-next" aria-label="Next section">›</button></div>
+      <div class="orbit-hint">DRAG TO SPIN · TAP THE FRONT TILE TO OPEN</div>
+    </div>
   </header>
 
   <!-- not configured yet -->
@@ -728,11 +756,12 @@ function show(view){
   $("#view-notes").hidden=!role||view!=="notes";
   if(view==="analysis") renderAnalysis();
   try{ if(role&&location.hash!=="#"+view) history.replaceState(null,"","#"+view) }catch{}
+  if(role&&orbit.current!==view) focusOrbit(view);
 }
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>show(t.dataset.view)));
 function setLoggedOutUI(){
   role=null;me=null;apps=[];priv={};users=[];allowed=[];
-  $("#gate").hidden=false;$("#who").hidden=true;$("#tabs").hidden=true;
+  $("#gate").hidden=false;$("#who").hidden=true;$("#tabs").hidden=true;$("#orbit").hidden=true;
   $("#view-apps").hidden=true;$("#view-admin").hidden=true;$("#view-tasks").hidden=true;$("#view-analysis").hidden=true;$("#view-gallery").hidden=true;$("#view-addtask").hidden=true;$("#view-notes").hidden=true;$("#lb").hidden=true;
   tasks=[];notes=[];activity=[];myUid=null;images=[];fullCache.clear();pendingPh=[];removePh.clear(); $("#alerts").innerHTML=""; shownNow.clear();
 }
@@ -849,7 +878,7 @@ function renderTasks(){
   const open=own.filter(t=>!isDone(t,today));
   const urgent=open.filter(t=>{const d=effDue(t,today);return d&&d<=today}).length;
   $("#t-count").textContent=`${open.length} OPEN${urgent?` · ${urgent} TODAY`:""}`;
-  const badge=$("#task-badge"); badge.hidden=!urgent; badge.textContent=urgent;
+  const badge=$("#task-badge"); badge.hidden=!urgent; badge.textContent=urgent; syncBadge();
   let list=tasks.filter(t=>{const dn=isDone(t,today),d=effDue(t,today);
     if(firmFilter&&(firmFilter==="-"?!!t.firm:t.firm!==firmFilter)) return false;
     if(isAdmin()&&whoFilter&&(whoFilter==="me"?!!t.assignedTo:t.assignedTo!==whoFilter)) return false;
@@ -1564,6 +1593,88 @@ window.addEventListener("appinstalled",()=>{installEvt=null;$("#install-btn").hi
 $("#install-btn").addEventListener("click",async()=>{if(!installEvt)return;installEvt.prompt();try{await installEvt.userChoice}catch{} installEvt=null;$("#install-btn").hidden=true});
 if("serviceWorker" in navigator&&location.protocol==="https:") navigator.serviceWorker.register("./sw.js").catch(()=>{});
 
+/* ---------------- 3D section orbit ---------------- */
+const ICONS={
+  apps:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
+  addtask:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M7 12h10"/></svg>',
+  tasks:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16"/><path d="M7 12l3 3 7-7"/></svg>',
+  notes:'<svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4M8 12h8M8 16h6"/></svg>',
+  gallery:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/></svg>',
+  analysis:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  admin:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>'
+};
+const orbit={views:[],angle:0,target:null,vel:0,drag:null,auto:true,idleUntil:0,current:"apps",raf:0,last:0,radius:180};
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function buildOrbit(){
+  const tabs=[...document.querySelectorAll(".tab")].filter(t=>!t.hidden);
+  orbit.views=tabs.map(t=>({v:t.dataset.view,label:t.childNodes[0].textContent.trim()}));
+  const n=orbit.views.length, w=innerWidth<=560?104:132;
+  const minR=(w+14)/(2*Math.sin(Math.PI/Math.max(n,3)));          /* neighbours never overlap */
+  const maxR=Math.max(minR,(Math.min(innerWidth,1180)-w-60)/2);     /* stays inside the screen */
+  orbit.radius=Math.round(Math.min(maxR,Math.max(minR,innerWidth*.26)));
+  $("#orbit").style.setProperty("--fl",(orbit.radius*2+w)+"px");
+  $("#orbit-ring").innerHTML=orbit.views.map((o,i)=>`<button type="button" class="otile" data-ov="${o.v}" data-i="${i}" tabindex="-1" aria-label="${esc(o.label)}">${ICONS[o.v]||""}<span>${esc(o.label)}</span>${o.v==="tasks"?'<i class="ob" id="orbit-badge" hidden></i>':""}</button>`).join("");
+  $("#orbit").hidden=!n; syncBadge(); focusOrbit(orbit.current,true); if(!orbit.raf) orbit.raf=requestAnimationFrame(orbitTick);
+}
+const step=()=>360/Math.max(orbit.views.length,1);
+function frontIndex(){const n=orbit.views.length;return ((Math.round(-orbit.angle/step())%n)+n)%n}
+function focusOrbit(view,instant){
+  orbit.current=view; const i=orbit.views.findIndex(o=>o.v===view); if(i<0) return;
+  /* shortest turn to bring tile i to the front */
+  let tgt=-i*step(); while(tgt-orbit.angle>180) tgt-=360; while(tgt-orbit.angle<-180) tgt+=360;
+  if(instant){orbit.angle=tgt;orbit.target=null}else orbit.target=tgt;
+  orbit.idleUntil=performance.now()+7000; paintOrbit();
+}
+function paintOrbit(){
+  const ring=$("#orbit-ring"); if(!ring) return;
+  ring.style.transform=`translateZ(${-orbit.radius*.55}px) rotateX(-12deg) rotateY(${orbit.angle}deg)`;
+  const fi=frontIndex();
+  ring.querySelectorAll(".otile").forEach((el,i)=>{
+    const a=i*step(); el.style.transform=`rotateY(${a}deg) translateZ(${orbit.radius}px) rotateY(${-(a+orbit.angle)}deg) rotateX(12deg)`;   /* always faces you */
+    const rel=((a+orbit.angle)%360+540)%360-180, c=Math.cos(rel*Math.PI/180);
+    el.style.opacity=(.28+.72*Math.pow((c+1)/2,1.4)).toFixed(2); el.style.filter=c<-.2?"blur(1px)":"";
+    el.classList.toggle("front",i===fi); el.classList.toggle("current",orbit.views[i].v===orbit.current);
+    el.tabIndex=i===fi?0:-1;
+  });
+}
+function orbitTick(now){
+  const dt=Math.min(.05,(now-(orbit.last||now))/1000); orbit.last=now;
+  if(!$("#orbit").hidden){
+    if(orbit.drag){/* finger/mouse moves it */}
+    else if(Math.abs(orbit.vel)>.5){orbit.angle+=orbit.vel*dt;orbit.vel*=Math.pow(.04,dt);if(Math.abs(orbit.vel)<=.5){orbit.vel=0;snapOrbit()}}
+    else if(orbit.target!=null){const d=orbit.target-orbit.angle;orbit.angle+=d*Math.min(1,dt*7);if(Math.abs(d)<.2){orbit.angle=orbit.target;orbit.target=null}}
+    else if(!RM&&orbit.auto&&now>orbit.idleUntil&&document.visibilityState==="visible"){orbit.angle-=8*dt}   /* slow 360° spin */
+    paintOrbit();
+  }
+  orbit.raf=requestAnimationFrame(orbitTick);
+}
+function snapOrbit(){orbit.target=Math.round(orbit.angle/step())*step()}
+function openFront(){const o=orbit.views[frontIndex()]; if(o){orbit.current=o.v; show(o.v)}}
+(function wireOrbit(){
+  const el=$("#orbit");
+  el.addEventListener("pointerdown",e=>{if(e.target.closest(".orbit-arrows"))return;
+    orbit.drag={x:e.clientX,a:orbit.angle,t:performance.now(),moved:0,lx:e.clientX,lt:performance.now()};orbit.vel=0;orbit.target=null;el.classList.add("dragging");el.setPointerCapture?.(e.pointerId)});
+  el.addEventListener("pointermove",e=>{const d=orbit.drag;if(!d)return;const dx=e.clientX-d.x;d.moved=Math.max(d.moved,Math.abs(dx));
+    orbit.angle=d.a+dx*.45; const now=performance.now(); if(now-d.lt>16){orbit.vel=(e.clientX-d.lx)*.45/((now-d.lt)/1000);d.lx=e.clientX;d.lt=now}});
+  const end=e=>{const d=orbit.drag;if(!d)return;orbit.drag=null;el.classList.remove("dragging");orbit.idleUntil=performance.now()+7000;
+    if(d.moved<6){ /* a tap */
+      orbit.vel=0; const t=document.elementFromPoint(e.clientX,e.clientY)?.closest(".otile");   /* pointer is captured, so look up what is under the finger */
+      if(t){const i=Number(t.dataset.i); if(i===frontIndex()) openFront(); else {orbit.current=orbit.views[i].v; focusOrbit(orbit.views[i].v); show(orbit.views[i].v)}}
+      else snapOrbit();
+    } else if(Math.abs(orbit.vel)<40){orbit.vel=0;snapOrbit()} else orbit.vel=Math.max(-900,Math.min(900,orbit.vel));
+  };
+  el.addEventListener("pointerup",end); el.addEventListener("pointercancel",end);
+  el.addEventListener("keydown",e=>{
+    if(e.key==="ArrowLeft"){e.preventDefault();turnOrbit(1)} else if(e.key==="ArrowRight"){e.preventDefault();turnOrbit(-1)}
+    else if((e.key==="Enter"||e.key===" ")&&e.target.closest(".otile")){e.preventDefault();openFront()}});
+  $("#orbit-prev").addEventListener("click",()=>turnOrbit(1));
+  $("#orbit-next").addEventListener("click",()=>turnOrbit(-1));
+  let rz; addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(role)buildOrbit()},200)});
+})();
+function turnOrbit(dir){orbit.vel=0;orbit.target=(orbit.target??Math.round(orbit.angle/step())*step())+dir*step();orbit.idleUntil=performance.now()+7000;
+  setTimeout(()=>$("#orbit-ring .otile.front")?.focus({preventScroll:true}),350)}
+function syncBadge(){const b=$("#task-badge"),ob=$("#orbit-badge"); if(ob){ob.hidden=b.hidden;ob.textContent=b.textContent}}
+
 /* ---------------- HUD ---------------- */
 const t0=Date.now(); let syncedAt=null, booted=false, pending=[];
 function tick(){
@@ -1623,7 +1734,8 @@ if(!CONFIGURED){
     $("#tf-who").hidden=!isAdmin();
     $("#who-name").textContent=isAdmin()?"ADMIN":"…";
     const want=location.hash.slice(1);
-    show(["tasks"].includes(want)||(isAdmin()&&["admin","analysis","gallery","addtask","notes"].includes(want))?want:"apps");
+    const first=["tasks"].includes(want)||(isAdmin()&&["admin","analysis","gallery","addtask","notes"].includes(want))?want:"apps";
+    orbit.current=first; buildOrbit(); show(first);
     if(isAdmin()) logVisit("Admin");
     boot();
     if(isAdmin()){watchAdmin(); logLine("> identity confirmed · ADMIN","ok")}
