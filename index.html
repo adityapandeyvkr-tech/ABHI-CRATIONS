@@ -75,6 +75,27 @@ body{margin:0;min-height:100vh;color:var(--text);font-family:var(--f-body);font-
 .otile.current::after{content:"";position:absolute;left:22%;right:22%;bottom:5px;height:2px;background:currentColor;opacity:.85}
 .otile .ob{position:absolute;top:4px;right:5px;min-width:15px;padding:0 4px;border-radius:8px;background:var(--amber);color:#1A1000;font:700 9px var(--f-code);letter-spacing:0;line-height:15px}
 .otile:focus-visible{outline:2px solid #fff;outline-offset:2px}
+/* tile animations */
+.otile{transition:background .25s,border-color .25s,color .25s,transform .3s cubic-bezier(.2,.9,.3,1.3)}
+.otile:hover:not(.front){transform:translateY(-5px);border-color:#BFEFFF;background:linear-gradient(160deg,rgba(90,170,255,.6),rgba(20,50,140,.85))}
+.otile.front{transform:scale(1.08)}
+.otile.front::before{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.75) 50%,transparent 65%);transform:translateX(-130%);animation:osheen 2.8s ease-in-out infinite;pointer-events:none}
+@keyframes osheen{0%,35%{transform:translateX(-130%)}75%,100%{transform:translateX(130%)}}
+.oslot.isfront{animation:oglow 2.2s ease-in-out infinite}
+@keyframes oglow{0%,100%{filter:drop-shadow(0 0 6px rgba(120,210,255,.7))}50%{filter:drop-shadow(0 0 18px rgba(150,225,255,1)) brightness(1.08)}}
+.oslot.isfront .ostem{background:linear-gradient(#fff,rgba(150,215,255,.3));box-shadow:0 0 8px #9FE6FF}
+.oslot.launch .otile{animation:olaunch .55s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes olaunch{0%{transform:scale(1.08)}40%{transform:scale(1.32);filter:brightness(1.6)}100%{transform:scale(1.08)}}
+.oripple{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:2px solid #CFF3FF;box-shadow:0 0 20px #8FE0FF,inset 0 0 12px #8FE0FF;pointer-events:none;animation:oripple .7s ease-out forwards;z-index:5}
+@keyframes oripple{to{transform:scale(14);opacity:0;border-width:1px}}
+.otrack.intro{animation:otrackin 1.1s cubic-bezier(.2,.9,.3,1) both}
+@keyframes otrackin{from{opacity:0;transform:rotateX(90deg) scale(.15)}to{opacity:1;transform:rotateX(90deg) scale(1)}}
+.otrack.intro .glow circle{stroke-dasharray:3000;stroke-dashoffset:3000;animation:otrackdraw 1.6s .2s ease-out forwards}
+@keyframes otrackdraw{to{stroke-dashoffset:0}}
+/* section opening */
+section.enter{animation:secin .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes secin{from{opacity:0;transform:translateY(18px) scale(.985);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+@media (prefers-reduced-motion:reduce){.otile.front::before,.oslot.isfront,.oslot.launch .otile,.otrack.intro,.otrack.intro .glow circle,section.enter,.oripple{animation:none!important}}
 /* the orbit track that connects all tiles */
 .otrack{position:absolute;pointer-events:none;overflow:visible}
 .otrack .glow{filter:drop-shadow(0 0 6px rgba(120,205,255,.95)) drop-shadow(0 0 14px rgba(60,140,255,.7))}
@@ -763,7 +784,10 @@ function show(view){
   if(view==="analysis") renderAnalysis();
   try{ if(role&&location.hash!=="#"+view) history.replaceState(null,"","#"+view) }catch{}
   if(role&&orbit.current!==view) focusOrbit(view);
+  const sec=$("#view-"+view); if(role&&sec&&lastView!==view){sec.classList.remove("enter"); void sec.offsetWidth; sec.classList.add("enter")}
+  lastView=view;
 }
+let lastView="";
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>show(t.dataset.view)));
 function setLoggedOutUI(){
   role=null;me=null;apps=[];priv={};users=[];allowed=[];
@@ -1609,7 +1633,7 @@ const ICONS={
   analysis:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
   admin:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>'
 };
-const orbit={tilt:15,views:[],angle:0,target:null,vel:0,drag:null,auto:true,idleUntil:0,current:"apps",raf:0,last:0,radius:180};
+const orbit={tilt:15,introAt:0,playIntro:true,views:[],angle:0,target:null,vel:0,drag:null,auto:true,idleUntil:0,current:"apps",raf:0,last:0,radius:180};
 const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
 function buildOrbit(){
   const tabs=[...document.querySelectorAll(".tab")].filter(t=>!t.hidden);
@@ -1637,6 +1661,7 @@ function buildOrbit(){
     ${nodes.map(([x,y])=>`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9" fill="none" stroke="rgba(160,220,255,.55)"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5" fill="#CFF3FF" style="filter:drop-shadow(0 0 5px #8FE0FF)"/>`).join("")}
   </svg>`;
   $("#orbit-ring").innerHTML=track+orbit.views.map((o,i)=>`<div class="oslot" data-i="${i}"><button type="button" class="otile" data-ov="${o.v}" data-i="${i}" tabindex="-1" aria-label="${esc(o.label)}">${ICONS[o.v]||""}<span>${esc(o.label)}</span>${o.v==="tasks"?'<i class="ob" id="orbit-badge" hidden></i>':""}</button><i class="ostem"></i></div>`).join("");
+  if(orbit.playIntro&&!RM){orbit.introAt=performance.now();orbit.playIntro=false;$("#orbit-ring .otrack").classList.add("intro")}
   syncBadge(); focusOrbit(orbit.current,true); if(!orbit.raf) orbit.raf=requestAnimationFrame(orbitTick);
 }
 const step=()=>360/Math.max(orbit.views.length,1);
@@ -1648,18 +1673,27 @@ function focusOrbit(view,instant){
   if(instant){orbit.angle=tgt;orbit.target=null}else orbit.target=tgt;
   orbit.idleUntil=performance.now()+7000; paintOrbit();
 }
+const easeOutBack=x=>{const c1=1.5,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
 function paintOrbit(){
   const ring=$("#orbit-ring"); if(!ring) return;
+  const now=performance.now(), t=now/1000;
   ring.style.transform=`translateZ(${-orbit.radius*.6}px) rotateX(${-orbit.tilt}deg) rotateY(${orbit.angle}deg)`;
   const fi=frontIndex();
   ring.querySelectorAll(".oslot").forEach((el,i)=>{
     const a=i*step(), btn=el.firstElementChild;
-    el.style.transform=`rotateY(${a}deg) translateZ(${orbit.radius}px) rotateY(${-(a+orbit.angle)}deg) rotateX(${orbit.tilt}deg)`;   /* always faces you */
+    /* intro: tiles fly out from the centre one after another */
+    let k=1; if(orbit.introAt){const x=Math.min(1,Math.max(0,(now-orbit.introAt-250-i*110)/750)); k=x>=1?1:easeOutBack(x)}
+    const bob=RM?0:Math.sin(t*1.7+i*.9)*(i===fi?3:5);           /* gentle floating */
+    const spin=(1-Math.min(1,k))*360;                              /* each tile spins in */
+    el.style.transform=`rotateY(${a}deg) translateZ(${orbit.radius*Math.max(0,k)}px) rotateY(${-(a+orbit.angle)}deg) rotateX(${orbit.tilt}deg) translateY(${bob-(1-Math.min(1,k))*40}px) rotateY(${spin}deg) scale(${.25+.75*Math.min(1,k)})`;
     const rel=((a+orbit.angle)%360+540)%360-180, c=Math.cos(rel*Math.PI/180);
-    el.style.opacity=(.3+.7*Math.pow((c+1)/2,1.3)).toFixed(2); el.style.filter=c<-.3?"blur(.8px)":"";
+    el.style.opacity=((.3+.7*Math.pow((c+1)/2,1.3))*Math.min(1,Math.max(0,k*1.4))).toFixed(2);
+    el.style.filter=c<-.3?"blur(.8px)":"";
+    el.classList.toggle("isfront",i===fi&&k>=1);
     btn.classList.toggle("front",i===fi); btn.classList.toggle("current",orbit.views[i].v===orbit.current);
     btn.tabIndex=i===fi?0:-1;
   });
+  if(orbit.introAt&&now-orbit.introAt>250+orbit.views.length*110+800) orbit.introAt=0;
 }
 function orbitTick(now){
   const dt=Math.min(.05,(now-(orbit.last||now))/1000); orbit.last=now;
@@ -1673,7 +1707,14 @@ function orbitTick(now){
   orbit.raf=requestAnimationFrame(orbitTick);
 }
 function snapOrbit(){orbit.target=Math.round(orbit.angle/step())*step()}
-function openFront(){const o=orbit.views[frontIndex()]; if(o){orbit.current=o.v; show(o.v)}}
+function launchFx(i){
+  const slot=$(`#orbit-ring .oslot[data-i="${i}"]`); if(!slot||RM) return;
+  slot.classList.remove("launch"); void slot.offsetWidth; slot.classList.add("launch"); setTimeout(()=>slot.classList.remove("launch"),600);
+  const tile=slot.firstElementChild.getBoundingClientRect(), box=$("#orbit").getBoundingClientRect(), r=document.createElement("i");
+  r.className="oripple"; r.style.left=(tile.left+tile.width/2-box.left)+"px"; r.style.top=(tile.top+tile.height/2-box.top)+"px";
+  $("#orbit").appendChild(r); setTimeout(()=>r.remove(),750);
+}
+function openFront(){const i=frontIndex(),o=orbit.views[i]; if(o){launchFx(i); orbit.current=o.v; show(o.v)}}
 (function wireOrbit(){
   const el=$("#orbit");
   el.addEventListener("pointerdown",e=>{if(e.target.closest(".orbit-arrows"))return;
@@ -1683,7 +1724,7 @@ function openFront(){const o=orbit.views[frontIndex()]; if(o){orbit.current=o.v;
   const end=e=>{const d=orbit.drag;if(!d)return;orbit.drag=null;el.classList.remove("dragging");orbit.idleUntil=performance.now()+7000;
     if(d.moved<6){ /* a tap */
       orbit.vel=0; const t=document.elementFromPoint(e.clientX,e.clientY)?.closest(".otile");   /* pointer is captured, so look up what is under the finger */
-      if(t){const i=Number(t.dataset.i); if(i===frontIndex()) openFront(); else {orbit.current=orbit.views[i].v; focusOrbit(orbit.views[i].v); show(orbit.views[i].v)}}
+      if(t){const i=Number(t.dataset.i); if(i===frontIndex()) openFront(); else {launchFx(i); orbit.current=orbit.views[i].v; focusOrbit(orbit.views[i].v); show(orbit.views[i].v)}}
       else snapOrbit();
     } else if(Math.abs(orbit.vel)<40){orbit.vel=0;snapOrbit()} else orbit.vel=Math.max(-900,Math.min(900,orbit.vel));
   };
@@ -1759,7 +1800,7 @@ if(!CONFIGURED){
     $("#who-name").textContent=isAdmin()?"ADMIN":"…";
     const want=location.hash.slice(1);
     const first=["tasks"].includes(want)||(isAdmin()&&["admin","analysis","gallery","addtask","notes"].includes(want))?want:"apps";
-    orbit.current=first; buildOrbit(); show(first);
+    orbit.current=first; orbit.playIntro=true; buildOrbit(); show(first);
     if(isAdmin()) logVisit("Admin");
     boot();
     if(isAdmin()){watchAdmin(); logLine("> identity confirmed · ADMIN","ok")}
