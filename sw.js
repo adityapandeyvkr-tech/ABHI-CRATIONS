@@ -1,6 +1,6 @@
 /* Command Deck service worker: lets the app be installed and opens fast.
    Only caches this site's own files. Firebase data always comes live from the internet. */
-const CACHE = "command-deck-v12";
+const CACHE = "command-deck-v14";
 const SHELL = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", e => {

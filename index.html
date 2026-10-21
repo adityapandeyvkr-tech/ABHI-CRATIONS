@@ -56,6 +56,73 @@ html{background:var(--void)}
 body{margin:0;min-height:100vh;color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.45;
   background:radial-gradient(ellipse 85% 70% at 50% 38%, #2A5FD6 0%, #163A9C 30%, #0B2268 58%, #061440 80%, #040B2B 100%) fixed, var(--void);
 }
+/* ---------- leads ---------- */
+.tn.leads{grid-template-columns:minmax(0,400px) minmax(0,1fr)}
+@media (max-width:900px){.tn.leads{grid-template-columns:minmax(0,1fr)}}
+.lead{border:1px solid var(--line);border-left:3px solid var(--cyan-dim);background:rgba(10,30,90,.5);padding:12px 14px;display:grid;gap:7px;min-width:0}
+.lead.won{border-left-color:var(--done)}.lead.hot{border-left-color:var(--amber)}.lead.late{border-left-color:var(--red)}.lead.flash{box-shadow:0 0 0 2px var(--cyan),0 0 24px var(--glow)}
+.lhead{display:flex;gap:8px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.lname{font-family:var(--f-code);font-size:16px;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);font-weight:400;overflow-wrap:anywhere;min-width:0}
+.lsteps{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
+.lsteps i{height:5px;background:rgba(120,185,255,.18)}
+.lsteps i.on{background:var(--cyan);box-shadow:0 0 6px var(--glow)}.lead.won .lsteps i.on{background:var(--done)}
+.lact{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lact input{flex:1 1 160px;min-width:0;padding:7px 9px;font-size:13px}
+.lbadge{font-family:var(--f-code);font-size:11.5px;letter-spacing:.08em;padding:1px 7px;border:1px solid var(--line)}
+.lbadge.due{color:var(--amber);border-color:rgba(255,181,71,.55)}.lbadge.over{color:var(--red);border-color:rgba(255,107,122,.6)}.lbadge.meet{color:#9FE9FF;border-color:rgba(111,216,255,.6)}.lbadge.ok{color:var(--done);border-color:rgba(92,255,176,.5)}
+.ltl{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-family:var(--f-code);font-size:12px;color:var(--muted)}
+.ltl b{color:var(--text);font-weight:400;letter-spacing:.08em}
+.lead.lost{border-left-color:#7a86a8;opacity:.78}.lead.lost .lsteps i.on{background:#7a86a8;box-shadow:none}
+.lbadge.stuck{color:var(--red);border-color:rgba(255,107,122,.6)}.lbadge.lostb{color:#c9d2ea;border-color:rgba(201,210,234,.5)}.lbadge.who{color:#c7b8ff;border-color:rgba(199,184,255,.5)}
+.lsub{display:grid;gap:6px;border:1px dashed var(--line);padding:8px 10px;background:rgba(6,20,64,.35)}
+.lsub .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lsub input,.lsub select{flex:1 1 120px;min-width:0;padding:7px 9px;font-size:13px}
+.lsub ul{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-family:var(--f-code);font-size:12px;color:var(--muted)}
+.lsub ul b{color:var(--text);font-weight:400}
+.lsub li.dn{color:var(--done)}
+a.btn.wa{color:#7dffb4;border-color:rgba(92,255,176,.55);text-decoration:none}
+.t-meta .lk{background:none;border:1px solid rgba(111,216,255,.5);color:#9FE9FF;font:inherit;padding:0 6px;cursor:pointer;letter-spacing:.08em}
+.todaybar{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px solid var(--line);background:rgba(8,26,82,.55);padding:10px 12px;cursor:pointer;text-align:left;width:100%;color:inherit;font:inherit}
+.todaybar:hover{border-color:var(--cyan)}
+.todaybar .tdh{font-family:var(--f-hud);font-size:12px;letter-spacing:.24em;color:var(--cyan);margin-right:6px}
+.todaybar .tdc{font-family:var(--f-code);font-size:12px;letter-spacing:.08em;padding:3px 8px;border:1px solid var(--line);color:var(--text)}
+.todaybar .tdc.warn{color:var(--amber);border-color:rgba(255,181,71,.55)}.todaybar .tdc.bad{color:var(--red);border-color:rgba(255,107,122,.6)}.todaybar .tdc.ok{color:var(--done);border-color:rgba(92,255,176,.45)}
+.todaybar .tdn{font-family:var(--f-code);font-size:11.5px;color:var(--muted);flex:1 1 220px;min-width:0;overflow-wrap:anywhere}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 8px}
+.cal-nav b{font-family:var(--f-hud);font-size:14px;letter-spacing:.24em;color:var(--cyan)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal .wd{font-family:var(--f-code);font-size:10.5px;letter-spacing:.14em;color:var(--muted);text-align:center;padding:2px 0}
+.cal .cd{min-height:64px;border:1px solid var(--line);background:rgba(10,30,90,.45);padding:4px 5px;display:flex;flex-direction:column;gap:3px;cursor:pointer;color:inherit;font:inherit;text-align:left;min-width:0}
+.cal .cd:hover{border-color:var(--cyan)}.cal .cd.out{opacity:.35}.cal .cd.td{border-color:var(--cyan);box-shadow:inset 0 0 0 1px var(--cyan)}.cal .cd.sel{background:rgba(111,216,255,.22)}
+.cal .cd .n{font-family:var(--f-code);font-size:12px;color:var(--text)}
+.cal .cd .dots{display:flex;flex-wrap:wrap;gap:3px}
+.cal .cd .dots i{font-style:normal;font-family:var(--f-code);font-size:10px;padding:0 4px;border:1px solid var(--line);line-height:15px}
+.cal .cd .dots i.meet{color:#9FE9FF;border-color:rgba(111,216,255,.6)}.cal .cd .dots i.fu{color:var(--amber);border-color:rgba(255,181,71,.55)}.cal .cd .dots i.task{color:var(--text)}.cal .cd .dots i.done{color:var(--done);border-color:rgba(92,255,176,.45)}
+@media (max-width:520px){.cal .cd{min-height:48px;padding:3px}.cal .cd .dots i{font-size:9px;padding:0 2px}}
+.sitem .k.done{color:var(--done);border-color:rgba(92,255,176,.45)}
+.tn.solo{grid-template-columns:minmax(0,1fr)!important}
+.qr{background:#fff;padding:10px;display:inline-block;margin:8px 0}
+.mono{font-family:var(--f-code);letter-spacing:.12em;overflow-wrap:anywhere}
+.pill.st0,.pill.st1{color:#9FE9FF;border-color:rgba(111,216,255,.5)}.pill.st2,.pill.st3{color:var(--amber);border-color:rgba(255,181,71,.5)}.pill.st4{color:#FFD27A;border-color:rgba(255,210,122,.5)}.pill.st5{color:var(--done);border-color:rgba(92,255,176,.5)}
+/* ---------- schedule ---------- */
+.sday{margin-top:16px}
+.sday h3{margin:0 0 8px;font-family:var(--f-hud);font-size:13px;letter-spacing:.24em;color:var(--cyan);display:flex;justify-content:space-between;gap:10px}
+.sday h3 em{font-style:normal;font-family:var(--f-code);font-size:11px;color:var(--muted);letter-spacing:.12em}
+.sitem{display:grid;grid-template-columns:86px auto minmax(0,1fr);gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--line);background:rgba(10,30,90,.45);cursor:pointer;text-align:left;color:inherit;width:100%;font:inherit}
+.sitem+.sitem{margin-top:6px}
+.sitem:hover{border-color:var(--cyan)}
+.sitem time{font-family:var(--f-code);font-size:13px;color:var(--text);letter-spacing:.06em}
+.sitem .k{font-family:var(--f-code);font-size:10px;letter-spacing:.14em;padding:2px 6px;border:1px solid var(--line);white-space:nowrap}
+.sitem .k.meet{color:#9FE9FF;border-color:rgba(111,216,255,.6)}.sitem .k.fu{color:var(--amber);border-color:rgba(255,181,71,.55)}.sitem .k.task{color:var(--text)}.sitem .k.rt{color:var(--done);border-color:rgba(92,255,176,.45)}.sitem .k.over{color:var(--red);border-color:rgba(255,107,122,.6)}
+.sitem b{display:block;font-family:var(--f-code);font-weight:400;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);overflow-wrap:anywhere}
+.sitem small{display:block;font-family:var(--f-code);font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}
+@media (max-width:520px){.sitem{grid-template-columns:64px minmax(0,1fr)}.sitem .k{grid-column:2;justify-self:start}.sitem > div{grid-column:1/-1}}
+.funnel{display:grid;gap:6px}
+.frow{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr) auto;gap:10px;align-items:center;font-family:var(--f-code);font-size:12px}
+.frow .bar2{height:14px;background:rgba(120,185,255,.12)}
+.frow .bar2 i{display:block;height:100%;background:var(--cyan);box-shadow:0 0 8px var(--glow)}
+.frow.won .bar2 i{background:var(--done)}
+@media (max-width:520px){.frow{grid-template-columns:minmax(0,1fr) auto}.frow .bar2{grid-column:1/-1}}
 /* 3D section orbit (replaces the tab bar) */
 .tabs{display:none!important}
 .orbit{flex:1 1 100%;position:relative;height:var(--oh,330px);overflow:hidden;perspective:1000px;perspective-origin:50% 26%;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;margin-top:4px}
@@ -418,6 +485,8 @@ input[type=date]{color-scheme:light;padding:9px 8px}
       <button class="tab" role="tab" aria-selected="true" data-view="apps">Apps</button>
       <button class="tab" role="tab" aria-selected="false" data-view="addtask">Add Task</button>
       <button class="tab" role="tab" aria-selected="false" data-view="tasks">Tasks<span class="tabcount" id="task-badge" hidden>0</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-view="schedule">Schedule</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="leads">Leads</button>
       <button class="tab" role="tab" aria-selected="false" data-view="notes">Notes</button>
       <button class="tab" role="tab" aria-selected="false" data-view="gallery">Gallery</button>
       <button class="tab" role="tab" aria-selected="false" data-view="analysis">Analysis</button>
@@ -446,12 +515,14 @@ input[type=date]{color-scheme:light;padding:9px 8px}
     <form id="gate-form">
       <label for="g-user">Username<input id="g-user" autocomplete="username"></label>
       <label for="g-pass">Password<input id="g-pass" type="password" autocomplete="current-password"></label>
+      <label for="g-code" id="g-code-wrap" hidden>6-digit code from Google Authenticator<input id="g-code" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></label>
       <button class="btn primary" id="g-btn" type="submit">Enter</button>
       <div class="msg" id="g-msg" role="status"></div>
     </form>
   </div>
 
   <!-- PAGE 1: APPS -->
+  <button type="button" class="todaybar" id="today-bar" hidden aria-label="Open today's schedule"></button>
   <section id="view-apps" hidden>
     <div class="hero">
       <div class="reactor" aria-hidden="true">
@@ -573,6 +644,56 @@ input[type=date]{color-scheme:light;padding:9px 8px}
     </div>
   </section>
 
+  <!-- PAGE: LEADS (only admin) -->
+  <section id="view-leads" hidden>
+    <div class="tn leads" id="l-grid">
+      <div class="hud" id="l-form-hud">
+        <h2><span id="l-form-h">Add lead</span> <em>SALES</em></h2>
+        <form class="tform" id="l-form" novalidate>
+          <label class="grow" for="l-name">Lead / company name<input id="l-name" maxlength="120" autocomplete="off"></label>
+          <label for="l-contact">Contact person<input id="l-contact" maxlength="80" autocomplete="off"></label>
+          <label for="l-phone">Phone<input id="l-phone" type="tel" maxlength="20" autocomplete="off"></label>
+          <label for="l-email">Email<input id="l-email" type="email" maxlength="120" autocomplete="off"></label>
+          <label for="l-firm">Our firm<select id="l-firm"></select></label>
+          <label for="l-value">Expected value (₹)<input id="l-value" type="number" min="0" step="1" inputmode="numeric"></label>
+          <label for="l-stage">Stage<select id="l-stage"></select></label>
+          <label for="l-who">Assign to<select id="l-who"><option value="">Me (Admin)</option></select></label>
+          <label for="l-fmode">Follow-up reminder<select id="l-fmode"><option value="none">No reminder</option><option value="daily">Every day</option><option value="every3">Every 3 days</option><option value="date">On a date</option></select></label>
+          <label for="l-fdate">Follow-up date<input id="l-fdate" type="date"></label>
+          <label for="l-freason">Reason<select id="l-freason"><option>Call back</option><option>Next meeting from our side</option><option>Documentation from our end</option><option>Other</option></select></label>
+          <label for="l-meet">Meeting date &amp; time<input id="l-meet" type="datetime-local"></label>
+          <label class="grow" for="l-mnote">Meeting place / agenda <em>(optional)</em><input id="l-mnote" maxlength="160" autocomplete="off"></label>
+          <label class="grow" for="l-notes">Notes <em>(optional)</em><textarea id="l-notes" rows="2" maxlength="2000"></textarea></label>
+          <button class="btn primary" id="l-save" type="submit">Add lead</button>
+          <button class="btn" id="l-cancel" type="button" hidden>Cancel edit</button>
+        </form>
+        <div class="msg" id="l-msg" role="status"></div>
+      </div>
+      <div class="hud">
+        <h2>Pipeline <em id="l-count">0 LEADS</em></h2>
+        <div class="filters" id="l-stages" role="group" aria-label="Filter by stage"></div>
+        <div class="search" style="max-width:none;margin:0 0 10px"><input id="l-search" type="search" placeholder="Search leads" aria-label="Search leads"></div>
+        <div class="msg" id="l-list-msg" role="status"></div>
+        <div class="list" id="l-list"></div>
+        <div class="empty" id="l-empty" hidden><strong>NO LEADS</strong><span id="l-empty-text">Add your first lead on the left.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE: SCHEDULE (only admin) -->
+  <section id="view-schedule" hidden>
+    <div class="hud" style="margin-top:20px">
+      <h2>Schedule <em id="s-sum">—</em></h2>
+      <div class="filters" role="group" aria-label="Day range" style="margin-top:0">
+        <button class="chip" type="button" data-sr="today" aria-pressed="false">Today</button>
+        <button class="chip" type="button" data-sr="tomorrow" aria-pressed="true">Tomorrow</button>
+        <button class="chip" type="button" data-sr="week" aria-pressed="false">Next 7 days</button>
+        <button class="chip" type="button" data-sr="month" aria-pressed="false">Month</button>
+      </div>
+      <div id="s-days"></div>
+    </div>
+  </section>
+
   <!-- PAGE: GALLERY (only admin) -->
   <section id="view-gallery" hidden>
     <div class="hud" id="g-zone" style="margin-top:20px">
@@ -636,6 +757,38 @@ input[type=date]{color-scheme:light;padding:9px 8px}
       </table></div>
       <div class="empty" id="a-empty" hidden><strong>NO HISTORY YET</strong>Tasks you add and finish will show up here.</div>
     </div>
+    <div class="hud" style="margin-top:20px">
+      <h2>Sales leads <em id="al-range">CALLS &amp; VISITS IN PERIOD</em></h2>
+      <div class="kpis" id="al-kpis"></div>
+    </div>
+    <div class="tn">
+      <div class="hud">
+        <h2>Pipeline by stage <em>ALL LEADS</em></h2>
+        <div class="funnel" id="al-funnel"></div>
+      </div>
+      <div class="hud">
+        <h2>Most active leads <em>CALLS + VISITS</em></h2>
+        <div class="funnel" id="al-active"></div>
+      </div>
+    </div>
+    <div class="tn">
+      <div class="hud">
+        <h2>Why leads were lost <em id="al-lost-n">0 LOST</em></h2>
+        <div class="funnel" id="al-lost"></div>
+      </div>
+      <div class="hud">
+        <h2>Stuck leads <em>15+ DAYS IN ONE STAGE</em></h2>
+        <div class="funnel" id="al-stuck"></div>
+      </div>
+    </div>
+    <div class="hud" style="margin-top:20px">
+      <h2>Lead history <em id="al-count">0 LEADS</em></h2>
+      <div class="tbl-wrap"><table class="tbl" style="min-width:1150px">
+        <thead><tr><th>Lead</th><th>Our firm</th><th>Handled by</th><th>Stage</th><th>Value</th><th>Latest quote</th><th>Days open</th><th>Days in stage</th><th>Calls</th><th>Visits</th><th>Last call</th><th>Last visit</th><th>Next step</th></tr></thead>
+        <tbody id="al-rows"></tbody>
+      </table></div>
+      <div class="empty" id="al-empty" hidden><strong>NO LEADS YET</strong>Leads you add will show up here.</div>
+    </div>
   </section>
 
   <section id="view-admin" hidden>
@@ -695,6 +848,18 @@ input[type=date]{color-scheme:light;padding:9px 8px}
       <div class="act-list" id="act-list"></div>
       <div class="empty" id="act-empty" hidden><strong>NO ACTIVITY YET</strong>Logins, app opens and task updates will show here.</div>
     </div>
+    <div class="hud section-gap" style="margin-top:20px" id="mfa-hud">
+      <h2>2-step login <em id="mfa-state">CHECKING…</em></h2>
+      <p class="note" id="mfa-text" style="margin:0 0 10px">After this is on, logging in as admin needs your password <b>and</b> a 6-digit code from the Google Authenticator app on your phone.</p>
+      <div class="row"><button class="btn primary" id="mfa-start" type="button">Turn on 2-step login</button><button class="btn danger" id="mfa-off" type="button" hidden>Turn off 2-step login</button></div>
+      <div id="mfa-setup" hidden style="margin-top:12px">
+        <p class="note" style="margin:0">1. Open <b>Google Authenticator</b> on your phone → <b>+</b> → <b>Scan a QR code</b>.</p>
+        <div class="qr" id="mfa-qr"></div>
+        <p class="note" style="margin:0 0 6px">Can't scan? Choose "Enter a setup key" and type: <span class="mono" id="mfa-key"></span></p>
+        <form id="mfa-form" class="row" novalidate><label for="mfa-code" style="flex:1 1 200px">2. Type the 6-digit code shown in the app<input id="mfa-code" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></label><button class="btn primary" type="submit">Confirm</button><button class="btn" id="mfa-cancel" type="button">Cancel</button></form>
+      </div>
+      <div class="msg" id="mfa-msg" role="status"></div>
+    </div>
   </section>
 </div>
 
@@ -731,7 +896,8 @@ input[type=date]{color-scheme:light;padding:9px 8px}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword,
-         updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+         updatePassword, EmailAuthProvider, reauthenticateWithCredential,
+         multiFactor, TotpMultiFactorGenerator, getMultiFactorResolver } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, writeBatch, addDoc, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const $ = s => document.querySelector(s);
@@ -740,6 +906,7 @@ let app, auth, db, secAuth;
 let role=null, me=null, apps=[], priv={}, users=[], allowed=[];
 let editingId=null, editingUser=null, busy=false, unsubs=[];
 let tasks=[], notes=[], taskFilter="open", editingNote=null;
+let leads=[], editingLead=null, leadStage="active", schedRange="tomorrow";
 let editingTask=null, firmFilter="", whoFilter="", activity=[], myUid=null;
 const openCL=new Set();
 let images=[], galFolder="all", pendingPh=[], removePh=new Set(), lbList=[], lbIdx=0;
@@ -772,7 +939,7 @@ function fbError(e){
 /* ---------------- views ---------------- */
 function show(view){
   if(["admin","analysis","gallery","addtask","notes"].includes(view)&&!isAdmin()) view="apps";
-  if(view==="tasks"&&!role) view="apps";
+  if(["tasks","leads","schedule"].includes(view)&&!role) view="apps";
   document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.view===view));
   $("#view-apps").hidden=!role||view!=="apps";
   $("#view-admin").hidden=!role||view!=="admin";
@@ -781,6 +948,9 @@ function show(view){
   $("#view-gallery").hidden=!role||view!=="gallery";
   $("#view-addtask").hidden=!role||view!=="addtask";
   $("#view-notes").hidden=!role||view!=="notes";
+  $("#view-leads").hidden=!role||view!=="leads";
+  $("#view-schedule").hidden=!role||view!=="schedule";
+  if(view==="schedule") renderSchedule();
   if(view==="analysis") renderAnalysis();
   try{ if(role&&location.hash!=="#"+view) history.replaceState(null,"","#"+view) }catch{}
   if(role&&orbit.current!==view) focusOrbit(view);
@@ -791,22 +961,80 @@ let lastView="";
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>show(t.dataset.view)));
 function setLoggedOutUI(){
   role=null;me=null;apps=[];priv={};users=[];allowed=[];
-  $("#gate").hidden=false;$("#who").hidden=true;$("#tabs").hidden=true;$("#orbit").hidden=true;
-  $("#view-apps").hidden=true;$("#view-admin").hidden=true;$("#view-tasks").hidden=true;$("#view-analysis").hidden=true;$("#view-gallery").hidden=true;$("#view-addtask").hidden=true;$("#view-notes").hidden=true;$("#lb").hidden=true;
-  tasks=[];notes=[];activity=[];myUid=null;images=[];fullCache.clear();pendingPh=[];removePh.clear(); $("#alerts").innerHTML=""; shownNow.clear();
+  $("#gate").hidden=false;$("#who").hidden=true;$("#tabs").hidden=true;$("#orbit").hidden=true;$("#today-bar").hidden=true;
+  $("#view-apps").hidden=true;$("#view-admin").hidden=true;$("#view-tasks").hidden=true;$("#view-analysis").hidden=true;$("#view-gallery").hidden=true;$("#view-addtask").hidden=true;$("#view-notes").hidden=true;$("#view-leads").hidden=true;$("#view-schedule").hidden=true;$("#lb").hidden=true;
+  tasks=[];notes=[];activity=[];leads=[];myUid=null;images=[];fullCache.clear();pendingPh=[];removePh.clear(); $("#alerts").innerHTML=""; shownNow.clear();
 }
 
 /* ---------------- login ---------------- */
+let mfaResolver=null;
+function resetGateMfa(){mfaResolver=null;$("#g-code-wrap").hidden=true;$("#g-code").value="";$("#g-user").disabled=false;$("#g-pass").disabled=false}
 $("#gate-form").addEventListener("submit",async e=>{
   e.preventDefault();
+  if(mfaResolver){                                   // step 2: 6-digit code
+    const code=$("#g-code").value.replace(/\D/g,"");
+    if(code.length!==6) return setMsg("#g-msg","Enter the 6-digit code from Google Authenticator.",true);
+    $("#g-btn").disabled=true; setMsg("#g-msg","Checking code…");
+    try{ const hint=mfaResolver.hints.find(x=>x.factorId===TotpMultiFactorGenerator.FACTOR_ID)||mfaResolver.hints[0];
+      await mfaResolver.resolveSignIn(TotpMultiFactorGenerator.assertionForSignIn(hint.uid,code)); $("#g-pass").value=""; resetGateMfa(); setMsg("#g-msg","") }
+    catch(err){ const c=(err&&err.code)||""; setMsg("#g-msg",c.includes("invalid-verification-code")||c.includes("invalid-code")?"Wrong code. Check the app and try again.":c.includes("session")||c.includes("expired")?"Took too long. Enter your password again.":fbError(err),true); if(c.includes("session")||c.includes("expired")) resetGateMfa() }
+    $("#g-btn").disabled=false; return;
+  }
   const u=$("#g-user").value.trim(), p=$("#g-pass").value;
   if(!u||!p) return setMsg("#g-msg","Enter username and password.",true);
   $("#g-btn").disabled=true; setMsg("#g-msg","Checking…");
   try{ try{sessionStorage.setItem("cd.justLoggedIn","1")}catch{} await signInWithEmailAndPassword(auth,toEmail(u),p); $("#g-pass").value=""; setMsg("#g-msg","") }
-  catch(err){ setMsg("#g-msg",fbError(err),true) }
+  catch(err){
+    if(((err&&err.code)||"").includes("multi-factor-auth-required")){
+      mfaResolver=getMultiFactorResolver(auth,err); $("#g-code-wrap").hidden=false; $("#g-user").disabled=true; $("#g-pass").disabled=true; $("#g-code").focus();
+      setMsg("#g-msg","Password OK. Now enter the 6-digit code from Google Authenticator.");
+    } else setMsg("#g-msg",fbError(err),true)
+  }
   $("#g-btn").disabled=false;
 });
 $("#signout").addEventListener("click",()=>signOut(auth));
+
+/* ---------------- 2-step login (admin, Google Authenticator) ---------------- */
+let mfaSecret=null;
+function paintMfa(){
+  if(!isAdmin()||!auth.currentUser) return;
+  let on=false; try{ on=multiFactor(auth.currentUser).enrolledFactors.length>0 }catch{}
+  $("#mfa-state").textContent=on?"ON":"OFF";
+  $("#mfa-start").hidden=on; $("#mfa-off").hidden=!on;
+  $("#mfa-text").innerHTML=on?"2-step login is <b>ON</b>. Logging in as admin needs your password and the 6-digit code from Google Authenticator.":"After this is on, logging in as admin needs your password <b>and</b> a 6-digit code from the Google Authenticator app on your phone.";
+}
+function mfaErr(err){const c=(err&&err.code)||"";
+  if(c.includes("requires-recent-login")) return "For safety, log out, log in again, then try this within 5 minutes.";
+  if(c.includes("operation-not-allowed")||c.includes("unsupported-first-factor")||c.includes("admin-restricted")||c.includes("configuration")) return "2-step (TOTP) is not switched on in Firebase yet. Run the one-time “Enable 2-step login” step first (see setup notes).";
+  if(c.includes("invalid-verification-code")||c.includes("invalid-code")) return "Wrong code. Wait for a new code in the app and try again.";
+  return fbError(err)}
+function loadQR(){return window.QRCode?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+$("#mfa-start").addEventListener("click",async()=>{
+  setMsg("#mfa-msg","Preparing…");
+  try{
+    const session=await multiFactor(auth.currentUser).getSession();
+    mfaSecret=await TotpMultiFactorGenerator.generateSecret(session);
+    const url=mfaSecret.generateQrCodeUrl(auth.currentUser.email,"Command Deck");
+    $("#mfa-key").textContent=(mfaSecret.secretKey||"").replace(/(.{4})/g,"$1 ").trim();
+    $("#mfa-qr").innerHTML=""; $("#mfa-qr").hidden=false; try{await loadQR(); new QRCode($("#mfa-qr"),{text:url,width:180,height:180})}catch{$("#mfa-qr").hidden=true}
+    $("#mfa-setup").hidden=false; $("#mfa-start").hidden=true; setMsg("#mfa-msg",""); $("#mfa-code").focus();
+  }catch(err){console.error(err);setMsg("#mfa-msg",mfaErr(err),true)}
+});
+$("#mfa-cancel").addEventListener("click",()=>{mfaSecret=null;$("#mfa-setup").hidden=true;$("#mfa-qr").innerHTML="";$("#mfa-form").reset();setMsg("#mfa-msg","");paintMfa()});
+$("#mfa-form").addEventListener("submit",async e=>{
+  e.preventDefault(); const code=$("#mfa-code").value.replace(/\D/g,"");
+  if(code.length!==6) return setMsg("#mfa-msg","Enter the 6-digit code shown in the app.",true);
+  try{
+    await multiFactor(auth.currentUser).enroll(TotpMultiFactorGenerator.assertionForEnrollment(mfaSecret,code),"Google Authenticator");
+    mfaSecret=null; $("#mfa-setup").hidden=true; $("#mfa-qr").innerHTML=""; $("#mfa-form").reset(); paintMfa();
+    setMsg("#mfa-msg","✓ 2-step login is ON. Next time you log in, the app will ask for the 6-digit code.");
+  }catch(err){console.error(err);setMsg("#mfa-msg",mfaErr(err),true)}
+});
+$("#mfa-off").addEventListener("click",async e=>{
+  if(!arm(e.currentTarget,"Turn off 2-step login")) return; armed=null;
+  try{ const u=auth.currentUser; for(const f of multiFactor(u).enrolledFactors) await multiFactor(u).unenroll(f); paintMfa(); setMsg("#mfa-msg","2-step login is OFF.") }
+  catch(err){console.error(err);setMsg("#mfa-msg",mfaErr(err),true)}
+});
 
 /* change own password */
 $("#chpw-open").addEventListener("click",()=>{$("#chpw").hidden=false;setMsg("#c-msg","");$("#c-old").focus()});
@@ -830,6 +1058,7 @@ function watchAdmin(){
   unsubs.push(onSnapshot(collection(db,"appsPrivate"),s=>{priv={};s.docs.forEach(d=>priv[d.id]=d.data());render()},onErr));
   unsubs.push(onSnapshot(collection(db,"adminTasks"),s=>{tasks=s.docs.map(d=>({id:d.id,...d.data()}));renderTasks()},onErr));
   unsubs.push(onSnapshot(collection(db,"adminNotes"),s=>{notes=s.docs.map(d=>({id:d.id,...d.data()}));renderNotes();renderGallery()},onErr));
+  unsubs.push(onSnapshot(collection(db,"leads"),s=>{leads=s.docs.map(d=>({id:d.id,...d.data()}));renderLeads();renderSchedule();renderTasks()},onErr));
   unsubs.push(onSnapshot(collection(db,"adminImages"),s=>{images=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));renderNotes();renderGallery()},onErr));
   unsubs.push(onSnapshot(collection(db,"users"),s=>{users=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.name.localeCompare(b.name));render();fillPeople();renderTasks()},onErr));
   unsubs.push(onSnapshot(query(collection(db,"activity"),orderBy("at","desc"),limit(300)),s=>{activity=s.docs.map(d=>({id:d.id,...d.data()}));renderActivity();renderUsers()},onErr));
@@ -841,7 +1070,8 @@ function watchEmployee(uid){
     if(s.data().disabled){ setMsg("#g-msg","Your access is paused. Contact the admin.",true); signOut(auth); return }
     const u=s.data(); me={id:uid,...u}; allowed=u.apps||[];
     if(first){ first=false; logVisit(u.name);
-      unsubs.push(onSnapshot(query(collection(db,"adminTasks"),where("assignedTo","==",uid)),q=>{tasks=q.docs.map(d=>({id:d.id,...d.data()}));renderTasks()},onErr)); }
+      unsubs.push(onSnapshot(query(collection(db,"adminTasks"),where("assignedTo","==",uid)),q=>{tasks=q.docs.map(d=>({id:d.id,...d.data()}));renderTasks();renderSchedule()},onErr));
+      unsubs.push(onSnapshot(query(collection(db,"leads"),where("assignedTo","==",uid)),q=>{leads=q.docs.map(d=>({id:d.id,...d.data()}));renderLeads();renderSchedule();checkAlerts()},onErr)); }
     $("#who-name").textContent=(u.name||"").toUpperCase();
     const got=await Promise.all(allowed.map(id=>getDoc(doc(db,"apps",id)).then(d=>d.exists()?{id:d.id,...d.data()}:null).catch(()=>null)));
     apps=got.filter(Boolean); sortApps(); render(); markSync(true);
@@ -885,11 +1115,13 @@ function fillFirms(){
   $("#t-firm").innerHTML=`<option value="">— None —</option>`+opts;
   $("#tf-firm").innerHTML=`<option value="">All firms</option>`+opts+`<option value="-">No firm</option>`;
   $("#n-firm").innerHTML=`<option value="">— None —</option>`+opts;
+  $("#l-firm").innerHTML=`<option value="">— None —</option>`+opts;
   $("#g-up-firm").innerHTML=`<option value="">Upload to: No folder</option>`+FIRMS.map(f=>`<option value="${esc(f)}">Upload to: ${esc(f)}</option>`).join("");
   $("#lb-firm").innerHTML=`<option value="">No folder</option>`+opts;
 }
 function fillPeople(){
   const active=users.filter(u=>!u.disabled);
+  {const c=$("#l-who").value; $("#l-who").innerHTML=`<option value="">Me (Admin)</option>`+active.map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join(""); $("#l-who").value=c&&active.some(u=>u.id===c)?c:"";}
   const cur=$("#t-who").value;
   $("#t-who").innerHTML=`<option value="">Me (Admin)</option>`+active.map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join("");
   $("#t-who").value=cur&&active.some(u=>u.id===cur)?cur:"";
@@ -923,7 +1155,7 @@ function renderTasks(){
     return `<div class="task p-${esc(t.prio||"med")}${dn?" done":""}${t.id===editingTask?" editing":""}" data-tid="${esc(t.id)}">
       <input type="checkbox" ${dn?"checked":""} aria-label="Mark done" data-tact="toggle">
       <div style="min-width:0"><span class="t-title">${esc(t.title)}</span>
-        <div class="t-meta">${t.firm?`<span class="firm">${esc(t.firm)}</span>`:""}${isAdmin()&&t.assignedTo?`<span class="who">→ ${esc(userName(t.assignedTo).toUpperCase())}</span>`:""}<span>${(t.prio||"med").toUpperCase()}</span>${daily?`<span class="rep">↻ EVERY DAY</span>`:""}${!daily&&t.due?`<span class="${late?"late":isToday?"today":""}">${late?"LATE · ":isToday?"TODAY · ":"DUE "}${fmtDate(t.due)}</span>`:""}${t.remindAt?`<span>⏰ ${fmtTime(t.remindAt)}</span>`:""}${rs?`<span class="rs${rs>=3?" bad":""}">${rs>=3?"⚠ TOO LATE · ":"↻ "}RESCHEDULED ${rs}x</span>`:""}${sk?`<span class="rs">SKIPPED TODAY</span>`:""}${dn&&t.doneAt?`<span>DONE ${fmtStamp(t.doneAt)}</span>`:""}</div>
+        <div class="t-meta">${t.firm?`<span class="firm">${esc(t.firm)}</span>`:""}${isAdmin()&&t.assignedTo?`<span class="who">→ ${esc(userName(t.assignedTo).toUpperCase())}</span>`:""}<span>${(t.prio||"med").toUpperCase()}</span>${daily?`<span class="rep">↻ EVERY DAY</span>`:""}${!daily&&t.due?`<span class="${late?"late":isToday?"today":""}">${late?"LATE · ":isToday?"TODAY · ":"DUE "}${fmtDate(t.due)}</span>`:""}${t.remindAt?`<span>⏰ ${fmtTime(t.remindAt)}</span>`:""}${t.leadId&&leads.some(l=>l.id===t.leadId)?`<button class="lk" type="button" data-tact="lead" title="Open this lead">🔗 ${esc((t.leadName||"LEAD").toUpperCase())}</button>`:""}${rs?`<span class="rs${rs>=3?" bad":""}">${rs>=3?"⚠ TOO LATE · ":"↻ "}RESCHEDULED ${rs}x</span>`:""}${sk?`<span class="rs">SKIPPED TODAY</span>`:""}${dn&&t.doneAt?`<span>DONE ${fmtStamp(t.doneAt)}</span>`:""}</div>
         ${cs.n?`<details class="cl" ${openCL.has(t.id)?"open":""} data-cl="${esc(t.id)}"><summary>☑ ${cs.d}/${cs.n} STEPS <span class="clbar"><i style="width:${Math.round(cs.d/cs.n*100)}%"></i></span></summary><ul>${t.checklist.map((c,i)=>`<li class="${c.d?"dn":""}"><label><input type="checkbox" data-step="${i}" ${c.d?"checked":""}><span>${esc(c.t)}</span></label></li>`).join("")}</ul></details>`:""}
       </div>
       <div class="acts">${!dn&&!daily?`<button class="btn sm" type="button" data-tact="tmrw" title="Move to tomorrow">→ Tomorrow</button>`:""}${isAdmin()?`<button class="btn sm" type="button" data-tact="edit">Edit</button>`:""}</div>
@@ -940,7 +1172,7 @@ function renderTasks(){
       <div class="acts"><button class="btn sm" type="button" data-tact="edit">Edit</button></div></div>`}).join("");
     $("#t-recent-empty").hidden=rec.length>0;
   }
-  checkAlerts(); renderAnalysis();
+  checkAlerts(); renderAnalysis(); renderToday();
 }
 function renderNotes(){
   const q=$("#n-search").value.trim().toLowerCase();
@@ -1005,6 +1237,7 @@ $("#t-list").addEventListener("change",async e=>{
 async function onTaskClick(e){
   const el=e.target.closest("[data-tact]"); if(!el)return;
   const id=el.closest(".task").dataset.tid, t=tasks.find(x=>x.id===id); if(!t)return;
+  if(el.dataset.tact==="lead"){ if(t.leadId) openLead(t.leadId); return }
   if(el.dataset.tact==="edit"){
     editingTask=id; $("#t-title").value=t.title||""; $("#t-due").value=t.due||""; $("#t-prio").value=t.prio||"med";
     $("#t-rep").value=t.repeat||"none"; $("#t-due").disabled=t.repeat==="daily"; $("#t-time").value=t.remindAt||"";
@@ -1229,6 +1462,287 @@ $("#act-who").addEventListener("change",renderActivity);
 $("#act-type").addEventListener("change",renderActivity);
 function lastSeen(uid){const a=activity.find(x=>x.uid===uid);return a?a.at:0}
 
+/* ---------------- sales leads ---------------- */
+const STAGES=["Generating requirement","Requirement generated","Quotation shared","Waiting for PO","Waiting for fund","Fund received"];
+const stageIx=l=>Math.max(0,STAGES.indexOf(l.stage));
+const leadWon=l=>stageIx(l)===5&&!l.lost;
+const leadLost=l=>!!l.lost;
+const leadClosed=l=>leadWon(l)||leadLost(l);
+const leadMine=l=>isAdmin()?!l.assignedTo:l.assignedTo===myUid;
+const LOST_REASONS=["Price too high","Went to competitor","No budget","No response","Requirement cancelled","Other"];
+const STUCK_DAYS=15;
+function stageSince(l){const a=(l.activity||[]).filter(x=>x.t==="stage");return a.length?a[a.length-1].at:(l.createdAt||Date.now())}
+const daysInStage=l=>Math.max(0,Math.floor((Date.now()-stageSince(l))/864e5));
+const latestQuote=l=>{const q=l.quotes||[];return q.length?q[q.length-1]:null};
+const leadTasks=l=>tasks.filter(t=>t.leadId===l.id);
+const byWho=()=>isEmp()&&me?{by:me.name||""}:{};
+function waNumber(ph){let d=String(ph||"").replace(/\D/g,"");if(d.length===11&&d[0]==="0")d=d.slice(1);if(d.length===10)d="91"+d;return d.length>=11?d:""}
+function waText(l){
+  const who=(l.contact||l.name||"").trim(), ix=stageIx(l);
+  const body=ix<=1?"aapki requirement ke baare mein baat karni thi. Aapko kab time milega?":
+    ix===2?`humne jo quotation bheja tha${latestQuote(l)?.no?" ("+latestQuote(l).no+")":""}, uske baare mein aapka feedback chahiye tha.`:
+    ix===3?"PO ka status jaanna tha. Kab tak mil sakta hai?":ix===4?"payment ka status jaanna tha. Kab tak process ho jaayega?":"aapke saath kaam karke achha laga. Dhanyavaad!";
+  return `Namaste ${who} ji, ${body}${l.firm?"\n\n— "+l.firm:""}`;
+}
+const waLink=l=>{const n=waNumber(l.phone);return n?`https://wa.me/${n}?text=${encodeURIComponent(waText(l))}`:""};
+const tomorrowStr=()=>addDays(todayStr(),1);
+const inr=v=>v?"₹"+Number(v).toLocaleString("en-IN"):"";
+function nextFollow(l,today=todayStr()){
+  if(leadClosed(l)) return "";
+  const lf=l.lastFollow||"";
+  if(l.followMode==="daily") return lf===today?addDays(today,1):today;
+  if(l.followMode==="every3") return addDays(lf||dayOf(l.createdAt||Date.now()),3);
+  if(l.followMode==="date") return l.followDate&&(!lf||lf<l.followDate)?l.followDate:"";
+  return "";
+}
+/* every follow-up date of a lead inside [from,to] (for the schedule) */
+function followDatesIn(l,from,to,today=todayStr()){
+  const out=[], nf=nextFollow(l,today); if(!nf) return out;
+  if(l.followMode==="daily"){for(let d=nf<from?from:nf;d<=to;d=addDays(d,1)) out.push(d)}
+  else if(l.followMode==="every3"){for(let d=nf;d<=to;d=addDays(d,3)) if(d>=from) out.push(d)}
+  else if(nf>=from&&nf<=to) out.push(nf);
+  return out;
+}
+const meetDate=l=>(l.meetingAt||"").slice(0,10), meetTime=l=>(l.meetingAt||"").slice(11,16);
+const counts=(l,since=0)=>{const a=l.activity||[];return {calls:a.filter(x=>x.t==="call"&&x.at>=since).length,visits:a.filter(x=>x.t==="visit"&&x.at>=since).length}};
+const lastOf=(l,t)=>{const a=(l.activity||[]).filter(x=>x.t===t);return a.length?a[a.length-1].at:0};
+function fillStages(){$("#l-stage").innerHTML=STAGES.map(s=>`<option>${esc(s)}</option>`).join("")}
+fillStages();
+function syncFollowInputs(){const m=$("#l-fmode").value;$("#l-fdate").disabled=m!=="date";$("#l-freason").disabled=m==="none"}
+$("#l-fmode").addEventListener("change",syncFollowInputs); syncFollowInputs();
+
+function renderLeads(){
+  if(!role) return;
+  const today=todayStr(), q=$("#l-search").value.trim().toLowerCase(), adm=isAdmin();
+  $("#l-form-hud").hidden=!adm; $("#l-grid").classList.toggle("solo",!adm);
+  const live=leads.filter(l=>!leadLost(l));
+  const chips=[["active","Active",leads.filter(l=>!leadClosed(l)).length],["all","All",leads.length],...STAGES.map((s,i)=>[String(i),s,live.filter(l=>stageIx(l)===i).length]),["lost","Lost",leads.filter(leadLost).length]];
+  if(adm&&leads.some(l=>l.assignedTo)) chips.splice(2,0,["mine","Mine",leads.filter(l=>!l.assignedTo).length],["team","Team",leads.filter(l=>l.assignedTo).length]);
+  $("#l-stages").innerHTML=chips.map(([k,l,n])=>`<button class="chip" type="button" data-ls="${k}" aria-pressed="${k===leadStage}">${esc(l)} · ${n}</button>`).join("");
+  const pass=l=>leadStage==="all"?true:leadStage==="active"?!leadClosed(l):leadStage==="lost"?leadLost(l):leadStage==="mine"?!l.assignedTo:leadStage==="team"?!!l.assignedTo:(!leadLost(l)&&String(stageIx(l))===leadStage);
+  const list=leads.filter(l=>pass(l)&&(!q||[l.name,l.contact,l.phone,l.firm,l.notes,l.stage,l.assigneeName,l.lostReason].join(" ").toLowerCase().includes(q)))
+    .sort((a,b)=>{const ka=Math.min(nextFollow(a)||"9999",meetDate(a)||"9999"),kb=Math.min(nextFollow(b)||"9999",meetDate(b)||"9999");
+      return (leadClosed(a)-leadClosed(b))||(ka<kb?-1:ka>kb?1:0)||((b.updatedAt||0)-(a.updatedAt||0))});
+  $("#l-count").textContent=`${leads.length} LEAD${leads.length===1?"":"S"}`;
+  const ACT={call:"📞 CALL",visit:"🤝 VISIT",wa:"💬 WHATSAPP",quote:"₹ QUOTATION",created:"LEAD ADDED",lost:"✕ MARKED LOST",reopen:"↺ REOPENED",task:"☑ TASK ADDED"};
+  $("#l-list").innerHTML=list.map(l=>{
+    const ix=stageIx(l), lost=leadLost(l), won=leadWon(l), nf=nextFollow(l,today), md=meetDate(l), c=counts(l);
+    const over=nf&&nf<today, dueT=nf===today, hot=md&&md<=addDays(today,1), dis=daysInStage(l), stuck=!leadClosed(l)&&dis>=STUCK_DAYS;
+    let fu=""; if(nf){const days=Math.round((new Date(today)-new Date(nf))/864e5);
+      fu=`<span class="lbadge ${over?"over":dueT?"due":""}">${over?`FOLLOW-UP OVERDUE ${days}D`:dueT?"FOLLOW-UP TODAY":"NEXT FOLLOW-UP "+fmtDate(nf)} · ${esc((l.followReason||"Call back").toUpperCase())}</span>`}
+    const mt=md&&!lost?`<span class="lbadge meet">🤝 MEETING ${md===today?"TODAY":md===addDays(today,1)?"TOMORROW":fmtDate(md)} ${fmtTime(meetTime(l))}${l.meetingNote?" · "+esc(l.meetingNote.toUpperCase()):""}</span>`:"";
+    const st=lost?`<span class="lbadge lostb">✕ LOST · ${esc((l.lostReason||"").toUpperCase())}${l.lostAt?" · "+fmtStamp(l.lostAt):""}</span>`:won?`<span class="lbadge ok">✓ FUND RECEIVED</span>`:`<span class="lbadge ${stuck?"stuck":""}">${stuck?"⚠ STUCK · ":""}${dis===0?"IN THIS STAGE SINCE TODAY":`${dis} DAY${dis===1?"":"S"} IN THIS STAGE`}</span>`;
+    const acts=(l.activity||[]).slice().reverse().slice(0,30), lq=latestQuote(l), wa=waLink(l);
+    const lt=adm?leadTasks(l):[], ltOpen=lt.filter(t=>!t.done).length, quotes=l.quotes||[];
+    const lsub=adm&&!lost?`
+      <details class="cl" data-lsub="q"><summary>₹ QUOTATIONS · ${quotes.length}${lq?" · LATEST "+inr(lq.amount):""}</summary><div class="lsub">
+        ${quotes.length?`<ul>${quotes.map((x,i)=>`<li><b>${esc(x.no||"Quote "+(i+1))}</b> · ${inr(x.amount)||"—"} · ${x.date?fmtDate(x.date):fmtStamp(x.at)}${i?` · REVISION ${i}`:""}</li>`).join("")}</ul>`:""}
+        <div class="row"><input class="qno" maxlength="40" aria-label="Quotation number" title="Quotation number" placeholder="Quotation no."><input class="qamt" type="number" min="0" inputmode="numeric" aria-label="Amount (₹)" title="Amount (₹)" placeholder="Amount ₹"><input class="qdate" type="date" aria-label="Quotation date" title="Quotation date" value="${today}"><button class="btn sm" type="button" data-lact="quote">${quotes.length?"Add revised quote":"Save quotation"}</button></div>
+      </div></details>
+      <details class="cl" data-lsub="t"><summary>☑ TASKS FOR THIS LEAD · ${ltOpen} OPEN${lt.length-ltOpen?` · ${lt.length-ltOpen} DONE`:""}</summary><div class="lsub">
+        ${lt.length?`<ul>${lt.sort((a,b)=>(a.done-b.done)||((a.due||"9")<(b.due||"9")?-1:1)).map(t=>`<li class="${t.done?"dn":""}">${t.done?"✓":"○"} <b>${esc(t.title)}</b>${t.due?" · "+(t.done?"":t.due<today?"LATE · ":"DUE ")+fmtDate(t.due):""}${t.assignedTo?" · → "+esc(userName(t.assignedTo).toUpperCase()):""}</li>`).join("")}</ul>`:""}
+        <div class="row"><input class="ltitle" maxlength="160" aria-label="New task for this lead" title="New task for this lead" placeholder="Task for this lead"><input class="ldue" type="date" aria-label="Due date" title="Due date" value="${today}"><input class="ltime" type="time" aria-label="Remind at" title="Remind at (optional)"><button class="btn sm" type="button" data-lact="task">Add task</button></div>
+      </div></details>
+      <div class="lsub" data-lostbox hidden><div class="row"><select class="lreason" aria-label="Why was this lead lost?">${LOST_REASONS.map(r=>`<option>${esc(r)}</option>`).join("")}</select><input class="lrnote" maxlength="160" aria-label="Details (optional)" title="Details (optional)" placeholder="Details (optional)"><button class="btn sm danger" type="button" data-lact="lost">Confirm lost</button><button class="btn sm" type="button" data-lact="lostcancel">Cancel</button></div></div>`:"";
+    return `<div class="lead ${lost?"lost":won?"won":over?"late":(dueT||hot)?"hot":""}" data-lid="${esc(l.id)}">
+      <div class="lhead"><span class="lname">${esc(l.name)}</span><span class="pill st${ix}">${esc(lost?"LOST":STAGES[ix].toUpperCase())}</span></div>
+      <div class="lsteps" title="Stage ${ix+1} of 6">${STAGES.map((s,i)=>`<i class="${i<=ix?"on":""}"></i>`).join("")}</div>
+      ${(l.firm||l.contact||l.phone||l.value||(adm&&l.assignedTo))?`<div class="t-meta">${l.firm?`<span class="firm">${esc(l.firm)}</span>`:""}${adm&&l.assignedTo?`<span class="lbadge who">→ ${esc((l.assigneeName||userName(l.assignedTo)).toUpperCase())}</span>`:""}${l.contact?`<span>${esc(l.contact)}</span>`:""}${l.phone?`<a href="tel:${esc(l.phone)}" style="color:var(--cyan)">${esc(l.phone)}</a>`:""}${l.value?`<span>${inr(l.value)}</span>`:""}</div>`:""}
+      <div class="t-meta">${st}${lost?"":fu+mt}</div>
+      <div class="t-meta"><span>📞 ${c.calls} CALL${c.calls===1?"":"S"}</span><span>🤝 ${c.visits} VISIT${c.visits===1?"":"S"}</span>${lastOf(l,"call")?`<span>LAST CALL ${fmtStamp(lastOf(l,"call"))}</span>`:""}${lastOf(l,"visit")?`<span>LAST VISIT ${fmtStamp(lastOf(l,"visit"))}</span>`:""}</div>
+      ${l.notes?`<div class="t-meta" style="white-space:pre-wrap;text-transform:none">${esc(l.notes)}</div>`:""}
+      ${lost?(adm?`<div class="lact"><button class="btn sm" type="button" data-lact="reopen">↺ Reopen lead</button><button class="btn sm" type="button" data-lact="edit">Edit</button><button class="btn sm danger" type="button" data-lact="del">Delete</button></div>`:""):`<div class="lact"><input class="lnote" maxlength="200" aria-label="Note for this call or visit (optional)" title="Note for this call or visit (optional)">
+        <button class="btn sm" type="button" data-lact="call">📞 Log call</button>
+        <button class="btn sm" type="button" data-lact="visit">✓ Meeting done</button>
+        ${wa?`<a class="btn sm wa" href="${esc(wa)}" target="_blank" rel="noopener" data-lact="wa">💬 WhatsApp</a>`:""}
+        ${ix<5?`<button class="btn sm" type="button" data-lact="next">Next stage →</button>`:""}
+        ${adm?`<button class="btn sm" type="button" data-lact="edit">Edit</button>${won?"":`<button class="btn sm" type="button" data-lact="lostopen">✕ Lost</button>`}<button class="btn sm danger" type="button" data-lact="del">Delete</button>`:""}</div>`}
+      ${lsub}
+      ${acts.length?`<details class="cl"><summary>HISTORY · ${(l.activity||[]).length} ENTRIES</summary><ul class="ltl">${acts.map(a=>`<li>${fmtStamp(a.at)} · <b>${a.t==="stage"?"STAGE → "+esc((a.to||"").toUpperCase()):ACT[a.t]||esc(String(a.t).toUpperCase())}</b>${a.note?" · "+esc(a.note):""}${a.by?" · BY "+esc(a.by.toUpperCase()):""}</li>`).join("")}</ul></details>`:""}
+    </div>`}).join("");
+  restoreLsub();
+  $("#l-empty").hidden=list.length>0;
+  $("#l-empty-text").textContent=leads.length?"No leads in this view.":adm?"Add your first lead on the left.":"No leads are assigned to you yet.";
+  renderToday();
+}
+$("#l-search").addEventListener("input",renderLeads);
+const openLsub=new Set();
+$("#l-list").addEventListener("toggle",e=>{const d=e.target.closest?.("details[data-lsub]");if(!d)return;const k=d.closest(".lead").dataset.lid+":"+d.dataset.lsub;d.open?openLsub.add(k):openLsub.delete(k)},true);
+function restoreLsub(){document.querySelectorAll("#l-list details[data-lsub]").forEach(d=>{if(openLsub.has(d.closest(".lead").dataset.lid+":"+d.dataset.lsub))d.open=true})}
+$("#l-stages").addEventListener("click",e=>{const b=e.target.closest("[data-ls]");if(!b)return;leadStage=b.dataset.ls;renderLeads()});
+function resetLeadForm(){editingLead=null;$("#l-form").reset();$("#l-save").textContent="Add lead";$("#l-cancel").hidden=true;$("#l-form-h").textContent="Add lead";syncFollowInputs()}
+$("#l-cancel").addEventListener("click",()=>{resetLeadForm();setMsg("#l-msg","")});
+$("#l-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const name=$("#l-name").value.trim(); if(!name) return setMsg("#l-msg","Enter the lead or company name.",true);
+  const followMode=$("#l-fmode").value, followDate=$("#l-fdate").value;
+  if(followMode==="date"&&!followDate) return setMsg("#l-msg","Pick the follow-up date.",true);
+  const d={name,contact:$("#l-contact").value.trim(),phone:$("#l-phone").value.trim(),email:$("#l-email").value.trim(),firm:$("#l-firm").value,
+    value:Number($("#l-value").value)||0,stage:$("#l-stage").value,followMode,followDate:followMode==="date"?followDate:"",followReason:$("#l-freason").value,
+    meetingAt:$("#l-meet").value||"",meetingNote:$("#l-mnote").value.trim(),notes:$("#l-notes").value.trim(),updatedAt:Date.now(),
+    assignedTo:$("#l-who").value,assigneeName:$("#l-who").value?userName($("#l-who").value):""};
+  $("#l-save").disabled=true;
+  try{
+    if(editingLead){
+      const l=leads.find(x=>x.id===editingLead); if(!l) throw {msg:"This lead no longer exists."};
+      const log=(l.activity||[]).slice(-300);
+      if(l.stage!==d.stage) log.push({t:"stage",at:Date.now(),from:l.stage||"",to:d.stage});
+      if((l.assignedTo||"")!==d.assignedTo) log.push({t:"assigned",at:Date.now(),note:d.assignedTo?"to "+d.assigneeName:"back to admin"});
+      if((l.meetingAt||"")!==d.meetingAt&&d.meetingAt) log.push({t:"meeting set",at:Date.now(),note:d.meetingAt.replace("T"," ")});
+      if(l.followDate!==d.followDate&&d.followDate) {/* new follow-up date for "on a date" mode starts fresh */ d.lastFollow=l.lastFollow&&l.lastFollow>=d.followDate?"":(l.lastFollow||"")}
+      await updateDoc(doc(db,"leads",l.id),{...d,activity:log});
+      resetLeadForm(); setMsg("#l-msg",`Saved “${name}”.`);
+    }else{
+      await setDoc(doc(collection(db,"leads")),{...d,lastFollow:"",createdAt:Date.now(),activity:[{t:"created",at:Date.now()},{t:"stage",at:Date.now(),from:"",to:d.stage}]});
+      resetLeadForm(); setMsg("#l-msg",`Added “${name}”.`);
+    }
+  }catch(err){console.error(err);setMsg("#l-msg",err.msg||fbError(err),true)}
+  $("#l-save").disabled=false;
+});
+async function logLead(l,type,note){
+  const now=Date.now(), today=todayStr(), patch={activity:[...(l.activity||[]).slice(-300),{t:type,at:now,...(note?{note}:{}),...byWho()}],updatedAt:now};
+  if(type==="call"||type==="wa") patch.lastFollow=today;
+  if(type==="visit"){patch.lastFollow=today; if(meetDate(l)&&meetDate(l)<=today){patch.meetingAt="";patch.meetingNote=""}}
+  await updateDoc(doc(db,"leads",l.id),patch);
+}
+$("#l-list").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-lact]"); if(!b) return;
+  const card=b.closest(".lead"), id=card.dataset.lid, l=leads.find(x=>x.id===id); if(!l) return;
+  const note=card.querySelector(".lnote")?.value.trim()||"", A=b.dataset.lact, now=Date.now(), act=[...(l.activity||[]).slice(-300)];
+  if(A==="lostopen"){const bx=card.querySelector("[data-lostbox]");bx.hidden=false;bx.querySelector("select").focus();return}
+  if(A==="lostcancel"){card.querySelector("[data-lostbox]").hidden=true;return}
+  try{
+    if(A==="wa"){await logLead(l,"wa",note);setMsg("#l-list-msg",`💬 WhatsApp opened for “${l.name}”. Counted as today's follow-up.`);return}
+    if(A==="lost"){const r=card.querySelector(".lreason").value, d=card.querySelector(".lrnote").value.trim();
+      await updateDoc(doc(db,"leads",id),{lost:true,lostReason:r,lostNote:d,lostAt:now,lostStage:l.stage||"",updatedAt:now,meetingAt:"",meetingNote:"",activity:[...act,{t:"lost",at:now,note:r+(d?" · "+d:"")}]});
+      setMsg("#l-list-msg",`“${l.name}” marked as lost (${r}).`);return}
+    if(A==="reopen"){await updateDoc(doc(db,"leads",id),{lost:false,lostReason:"",lostNote:"",lostAt:null,updatedAt:now,activity:[...act,{t:"reopen",at:now},{t:"stage",at:now,from:l.stage,to:l.stage}]});setMsg("#l-list-msg",`“${l.name}” is active again.`);return}
+    if(A==="quote"){const no=card.querySelector(".qno").value.trim(), amt=Number(card.querySelector(".qamt").value)||0, qd=card.querySelector(".qdate").value||todayStr();
+      if(!no&&!amt) return setMsg("#l-list-msg","Enter the quotation number or amount.",true);
+      const quotes=[...(l.quotes||[]),{no,amount:amt,date:qd,at:now}], patch={quotes,updatedAt:now,activity:[...act,{t:"quote",at:now,note:[no,amt?inr(amt):""].filter(Boolean).join(" · ")+(quotes.length>1?` (revision ${quotes.length-1})`:"")}]};
+      if(amt) patch.value=amt;
+      if(stageIx(l)<2){patch.stage=STAGES[2];patch.activity.push({t:"stage",at:now,from:l.stage,to:STAGES[2]})}
+      await updateDoc(doc(db,"leads",id),patch);
+      setMsg("#l-list-msg",`₹ Quotation saved for “${l.name}”${patch.stage?" · moved to Quotation shared":""}.`);return}
+    if(A==="task"){const title=card.querySelector(".ltitle").value.trim(), due=card.querySelector(".ldue").value||todayStr(), remindAt=card.querySelector(".ltime").value||"";
+      if(!title) return setMsg("#l-list-msg","Type the task first.",true);
+      await setDoc(doc(collection(db,"adminTasks")),{title:`${title} — ${l.name}`,due,prio:"med",repeat:"none",remindAt,firm:l.firm||"",assignedTo:l.assignedTo||"",assigneeName:l.assigneeName||"",checklist:[],
+        done:false,lastDone:"",reschedules:0,origDue:due,log:[{t:"created",at:now}],createdAt:now,leadId:id,leadName:l.name});
+      await updateDoc(doc(db,"leads",id),{updatedAt:now,activity:[...act,{t:"task",at:now,note:title+" · due "+fmtDate(due)}]});
+      openLsub.add(id+":t"); setMsg("#l-list-msg",`☑ Task added for “${l.name}”. It is on the Tasks page and in the Schedule.`);return}
+    if(b.dataset.lact==="call"){await logLead(l,"call",note);setMsg("#l-list-msg",`📞 Call logged for “${l.name}” at ${new Date().toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit"})}.`)}
+    else if(b.dataset.lact==="visit"){await logLead(l,"visit",note);setMsg("#l-list-msg",`🤝 Meeting logged for “${l.name}” at ${new Date().toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit"})}.`)}
+    else if(b.dataset.lact==="next"){const ix=stageIx(l);if(ix<5){const to=STAGES[ix+1];await updateDoc(doc(db,"leads",id),{stage:to,updatedAt:Date.now(),activity:[...(l.activity||[]).slice(-300),{t:"stage",at:Date.now(),from:l.stage,to,...byWho()}]});setMsg("#l-list-msg",`“${l.name}” moved to ${to}.`)}}
+    else if(b.dataset.lact==="edit"){
+      editingLead=id; $("#l-name").value=l.name||""; $("#l-contact").value=l.contact||""; $("#l-phone").value=l.phone||""; $("#l-email").value=l.email||"";
+      $("#l-firm").value=l.firm||""; $("#l-value").value=l.value||""; $("#l-stage").value=STAGES[stageIx(l)]; $("#l-fmode").value=l.followMode||"none";
+      $("#l-fdate").value=l.followDate||""; $("#l-freason").value=l.followReason||"Call back"; $("#l-meet").value=l.meetingAt||""; $("#l-mnote").value=l.meetingNote||""; $("#l-notes").value=l.notes||""; $("#l-who").value=l.assignedTo||"";
+      syncFollowInputs(); $("#l-save").textContent="Save changes"; $("#l-cancel").hidden=false; $("#l-form-h").textContent="Edit lead"; setMsg("#l-msg","");
+      $("#l-form").scrollIntoView({behavior:"smooth",block:"start"}); $("#l-name").focus();
+    }
+    else if(b.dataset.lact==="del"){if(!arm(b,"Delete"))return;armed=null;await deleteDoc(doc(db,"leads",id));if(editingLead===id)resetLeadForm();setMsg("#l-list-msg",`Deleted “${l.name}”.`)}
+  }catch(err){setMsg("#l-list-msg",fbError(err),true)}
+});
+function openLead(id){show("leads");leadStage="all";$("#l-search").value="";renderLeads();
+  setTimeout(()=>{const c=$(`#l-list .lead[data-lid="${id}"]`);if(c){c.scrollIntoView({behavior:"smooth",block:"center"});c.classList.add("flash");setTimeout(()=>c.classList.remove("flash"),1600)}},120)}
+
+/* ---------------- schedule ---------------- */
+let calMonth="", calSel="";
+document.querySelectorAll("[data-sr]").forEach(b=>b.addEventListener("click",()=>{schedRange=b.dataset.sr;document.querySelectorAll("[data-sr]").forEach(x=>x.setAttribute("aria-pressed",x===b));renderSchedule()}));
+function dayLabel(d,today){const name=d===today?"TODAY":d===addDays(today,1)?"TOMORROW":d===addDays(today,-1)?"YESTERDAY":"";const [y,m,dd]=d.split("-").map(Number);
+  return (name?name+" · ":"")+new Date(y,m-1,dd).toLocaleDateString("en-IN",{weekday:"short",day:"2-digit",month:"short"}).toUpperCase()}
+const leadTag=t=>t.leadName?"🔗 "+t.leadName:"";
+function scheduleFor(d,today){
+  const items=[];
+  tasks.filter(mine).forEach(t=>{
+    if(t.repeat==="daily"){ if(d>=today&&!(d===today&&(isDone(t,today)||isSkipped(t,today)))) items.push({time:t.remindAt||"",k:"rt",kl:"ROUTINE",title:t.title,sub:[t.firm,"every day"].filter(Boolean).join(" · "),go:()=>show("tasks")}) }
+    else if(!t.done&&t.due===d) items.push({time:t.remindAt||"",k:"task",kl:d<today?"LATE TASK":"TASK",title:t.title,sub:[leadTag(t),t.firm,(t.prio||"med").toUpperCase(),t.reschedules?`moved ${t.reschedules}x`:""].filter(Boolean).join(" · "),go:()=>t.leadId&&leads.some(l=>l.id===t.leadId)?openLead(t.leadId):show("tasks")});
+  });
+  leads.filter(leadMine).forEach(l=>{
+    if(leadLost(l)) return;
+    if(meetDate(l)===d) items.push({time:meetTime(l),k:"meet",kl:"MEETING",title:l.name,sub:[l.meetingNote,l.contact,l.phone,STAGES[stageIx(l)]].filter(Boolean).join(" · "),go:()=>openLead(l.id)});
+    if(d>=today&&followDatesIn(l,d,d,today).length) items.push({time:"",k:"fu",kl:"FOLLOW-UP",title:l.name,sub:[l.followReason||"Call back",l.contact,l.phone,STAGES[stageIx(l)]].filter(Boolean).join(" · "),go:()=>openLead(l.id)});
+  });
+  return items.sort((a,b)=>(a.time?0:1)-(b.time?0:1)||(a.time<b.time?-1:a.time>b.time?1:0)||a.kl.localeCompare(b.kl));
+}
+/* what was actually done on a day (for the calendar) */
+function doneOn(d){
+  const items=[];
+  tasks.filter(mine).forEach(t=>{
+    if(t.repeat==="daily"){if((t.doneDays||[]).includes(d)) items.push({time:"",k:"done",kl:"✓ ROUTINE",title:t.title,sub:t.firm||"",go:()=>show("tasks")})}
+    else if(t.done&&t.doneAt&&dayOf(t.doneAt)===d) items.push({time:new Date(t.doneAt).toTimeString().slice(0,5),k:"done",kl:"✓ TASK",title:t.title,sub:[leadTag(t),t.firm].filter(Boolean).join(" · "),go:()=>show("tasks")});
+  });
+  leads.filter(leadMine).forEach(l=>(l.activity||[]).forEach(a=>{
+    if((a.t==="call"||a.t==="visit"||a.t==="wa")&&dayOf(a.at)===d) items.push({time:new Date(a.at).toTimeString().slice(0,5),k:"done",kl:a.t==="call"?"✓ CALL":a.t==="visit"?"✓ VISIT":"✓ WHATSAPP",title:l.name,sub:a.note||"",go:()=>openLead(l.id)});
+  }));
+  return items.sort((a,b)=>a.time<b.time?-1:1);
+}
+function overdueItems(today){
+  const out=[];
+  tasks.filter(mine).forEach(t=>{if(t.repeat!=="daily"&&!t.done&&t.due&&t.due<today) out.push({time:"",k:"over",kl:"LATE TASK",title:t.title,sub:[leadTag(t),"was due "+fmtDate(t.due)].filter(Boolean).join(" · "),go:()=>show("tasks")})});
+  leads.filter(leadMine).forEach(l=>{if(leadClosed(l))return;const nf=nextFollow(l,today);if(nf&&nf<today) out.push({time:"",k:"over",kl:"LATE FOLLOW-UP",title:l.name,sub:(l.followReason||"Call back")+" · due "+fmtDate(nf),go:()=>openLead(l.id)});
+    const md=meetDate(l); if(md&&md<today) out.push({time:meetTime(l),k:"over",kl:"MEETING NOT MARKED",title:l.name,sub:"was on "+fmtDate(md)+" · tap ✓ Meeting done in Leads",go:()=>openLead(l.id)})});
+  return out;
+}
+const sRow=(it,i,d)=>`<button type="button" class="sitem" data-si="${d}|${i}"><time>${it.time?fmtTime(it.time):"ANY TIME"}</time><span class="k ${it.k}">${it.kl}</span><div><b>${esc(it.title)}</b><small>${esc(it.sub||"")}</small></div></button>`;
+function renderSchedule(){
+  if(!role||$("#view-schedule").hidden) return;
+  const today=todayStr();
+  window.__sched={};
+  if(schedRange==="month") return renderCalendar(today);
+  const days=schedRange==="today"?[today]:schedRange==="tomorrow"?[addDays(today,1)]:[...Array(7)].map((_,i)=>addDays(today,i+1));
+  let html="", total=0;
+  const overdue=schedRange==="today"?overdueItems(today):[];
+  if(overdue.length){window.__sched.over=overdue;html+=`<div class="sday"><h3>⚠ NEEDS ATTENTION <em>${overdue.length}</em></h3>${overdue.map((it,i)=>sRow(it,i,"over")).join("")}</div>`;total+=overdue.length}
+  days.forEach(d=>{const its=scheduleFor(d,today); window.__sched[d]=its; total+=its.length;
+    html+=`<div class="sday"><h3>${dayLabel(d,today)} <em>${its.length} ITEM${its.length===1?"":"S"}</em></h3>${its.length?its.map((it,i)=>sRow(it,i,d)).join(""):`<div class="empty" style="padding:16px"><strong>FREE</strong>Nothing planned.</div>`}</div>`});
+  $("#s-days").innerHTML=html;
+  $("#s-sum").textContent=`${total} ITEM${total===1?"":"S"}`;
+}
+function renderCalendar(today){
+  if(!calMonth) calMonth=today.slice(0,7);
+  if(!calSel) calSel=today;
+  const [y,m]=calMonth.split("-").map(Number), first=new Date(y,m-1,1), startOff=(first.getDay()+6)%7;   // Monday first
+  const start=addDays(`${y}-${pad(m)}-01`,-startOff), cells=[...Array(42)].map((_,i)=>addDays(start,i));
+  const rows=cells.slice(35).every(d=>d.slice(0,7)!==calMonth)?cells.slice(0,35):cells;
+  let monthTotal=0;
+  const cellHtml=rows.map(d=>{
+    const plan=scheduleFor(d,today), done=d<=today?doneOn(d):[];
+    const n={meet:plan.filter(x=>x.k==="meet").length,fu:plan.filter(x=>x.k==="fu").length,task:plan.filter(x=>x.k==="task").length,done:done.length};
+    if(d.slice(0,7)===calMonth) monthTotal+=n.meet+n.fu+n.task;
+    return `<button type="button" class="cd${d.slice(0,7)!==calMonth?" out":""}${d===today?" td":""}${d===calSel?" sel":""}" data-cday="${d}" aria-label="${dayLabel(d,today)}"><span class="n">${Number(d.slice(8))}</span><span class="dots">${n.meet?`<i class="meet">🤝${n.meet}</i>`:""}${n.fu?`<i class="fu">📞${n.fu}</i>`:""}${n.task?`<i class="task">☑${n.task}</i>`:""}${n.done?`<i class="done">✓${n.done}</i>`:""}</span></button>`}).join("");
+  const sel=calSel, plan=scheduleFor(sel,today), done=sel<=today?doneOn(sel):[];
+  window.__sched[sel]=plan; window.__sched["done"+sel]=done;
+  const label=first.toLocaleDateString("en-IN",{month:"long",year:"numeric"}).toUpperCase();
+  $("#s-days").innerHTML=`<div class="cal-nav"><button class="btn sm" type="button" data-cm="-1" aria-label="Previous month">‹</button><b>${label}</b><button class="btn sm" type="button" data-cm="1" aria-label="Next month">›</button></div>
+    <div class="cal">${["MON","TUE","WED","THU","FRI","SAT","SUN"].map(w=>`<span class="wd">${w}</span>`).join("")}${cellHtml}</div>
+    <p class="note" style="margin:8px 0 0">🤝 meetings · 📞 follow-ups · ☑ tasks · ✓ done that day (daily routines are not counted). Tap a day to see it.</p>
+    <div class="sday"><h3>${dayLabel(sel,today)} <em>${plan.length} PLANNED${done.length?` · ${done.length} DONE`:""}</em></h3>
+      ${plan.length?plan.map((it,i)=>sRow(it,i,sel)).join(""):""}${done.map((it,i)=>sRow(it,i,"done"+sel)).join("")}
+      ${plan.length||done.length?"":`<div class="empty" style="padding:16px"><strong>FREE</strong>Nothing on this day.</div>`}</div>`;
+  $("#s-sum").textContent=`${monthTotal} ITEM${monthTotal===1?"":"S"} THIS MONTH`;
+}
+$("#s-days").addEventListener("click",e=>{
+  const cm=e.target.closest("[data-cm]"); if(cm){const [y,m]=calMonth.split("-").map(Number),d=new Date(y,m-1+Number(cm.dataset.cm),1);calMonth=`${d.getFullYear()}-${pad(d.getMonth()+1)}`;calSel=`${calMonth}-01`;if(calMonth===todayStr().slice(0,7))calSel=todayStr();renderSchedule();return}
+  const cd=e.target.closest("[data-cday]"); if(cd){calSel=cd.dataset.cday;if(calSel.slice(0,7)!==calMonth)calMonth=calSel.slice(0,7);renderSchedule();return}
+  const b=e.target.closest("[data-si]");if(!b)return;const k=b.dataset.si,j=k.lastIndexOf("|");window.__sched?.[k.slice(0,j)]?.[Number(k.slice(j+1))]?.go()});
+
+/* ---------------- today summary bar ---------------- */
+function renderToday(){
+  const bar=$("#today-bar"); if(!role){bar.hidden=true;return}
+  const today=todayStr(), its=scheduleFor(today,today), over=overdueItems(today);
+  const meets=its.filter(x=>x.k==="meet"), fus=its.filter(x=>x.k==="fu"), tks=its.filter(x=>x.k==="task"||x.k==="rt");
+  const hm=nowHM(), nextMeet=meets.find(x=>!x.time||x.time>=hm), tm=scheduleFor(addDays(today,1),today).filter(x=>x.k==="meet");
+  const C=(txt,cls="")=>`<span class="tdc ${cls}">${txt}</span>`;
+  bar.innerHTML=`<span class="tdh">TODAY</span>`+C(`☑ ${tks.length} TASK${tks.length===1?"":"S"}`,tks.length?"":"ok")
+    +C(`🤝 ${meets.length} MEETING${meets.length===1?"":"S"}`,meets.length?"warn":"")
+    +C(`📞 ${fus.length} FOLLOW-UP${fus.length===1?"":"S"}`,fus.length?"warn":"")
+    +C(`⚠ ${over.length} LATE`,over.length?"bad":"ok")
+    +`<span class="tdn">${nextMeet?`NEXT: ${nextMeet.time?fmtTime(nextMeet.time)+" · ":""}${esc(nextMeet.title.toUpperCase())}`:its.length+over.length?"TAP TO OPEN TODAY'S LIST":"ALL CLEAR FOR TODAY"}${tm.length?` · TOMORROW: ${tm.length} MEETING${tm.length===1?"":"S"} (${tm.map(x=>(x.time?fmtTime(x.time)+" ":"")+esc(x.title)).join(", ").toUpperCase()})`:""}</span>`;
+  bar.hidden=false;
+}
+$("#today-bar").addEventListener("click",()=>{schedRange="today";document.querySelectorAll("[data-sr]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.sr==="today"));show("schedule")});
+
 /* ---------------- analysis ---------------- */
 let anPeriod="30";
 document.querySelectorAll("[data-ap]").forEach(b=>b.addEventListener("click",()=>{
@@ -1305,7 +1819,41 @@ function renderAnalysis(){
         <td class="num">${ts.reduce((s,t)=>s+(t.reschedules||0),0)}</td><td class="num">${open.filter(t=>(t.reschedules||0)>=3).length||"0"}</td></tr>`}).join("");
   };
   $("#a-firm").innerHTML=grp(t=>t.firm||"No firm",FIRMS)||`<tr><td colspan="6" style="color:var(--muted)">No tasks yet.</td></tr>`;
+  renderLeadAnalysis(since);
   $("#a-person").innerHTML=grp(t=>t.assignedTo?userName(t.assignedTo):"Me (Admin)",["Me (Admin)"])||`<tr><td colspan="6" style="color:var(--muted)">No tasks yet.</td></tr>`;
+}
+
+function renderLeadAnalysis(since){
+  const today=todayStr(), K=(label,val,sub,cls="")=>`<div class="kpi ${cls}"><span>${label}</span><b>${val}</b><i>${sub}</i></div>`;
+  const active=leads.filter(l=>!leadClosed(l)), won=leads.filter(leadWon), lost=leads.filter(leadLost);
+  const calls=leads.reduce((s,l)=>s+counts(l,since).calls,0), visits=leads.reduce((s,l)=>s+counts(l,since).visits,0);
+  const overdue=active.filter(l=>{const nf=nextFollow(l,today);return nf&&nf<today}).length;
+  const pipeVal=active.reduce((s,l)=>s+(Number(l.value)||0),0), wonVal=won.reduce((s,l)=>s+(Number(l.value)||0),0), lostVal=lost.reduce((s,l)=>s+(Number(l.value)||0),0);
+  const upcoming=leads.filter(l=>!leadLost(l)&&meetDate(l)&&meetDate(l)>=today).length, stuck=active.filter(l=>daysInStage(l)>=STUCK_DAYS);
+  const closed=won.length+lost.length, winPct=closed?Math.round(won.length/closed*100):null;
+  $("#al-kpis").innerHTML=K("TOTAL LEADS",leads.length,`${active.length} active`)+K("FUND RECEIVED",won.length,wonVal?inr(wonVal):"closed won","good")
+    +K("LOST",lost.length,lostVal?inr(lostVal):"closed lost",lost.length?"bad":"")+K("WIN RATE",winPct===null?"—":winPct+"%",`${won.length} won of ${closed} closed`,winPct===null?"":winPct>=50?"good":"warn")
+    +K("PIPELINE VALUE",pipeVal?inr(pipeVal):"—","open leads")+K("CALLS",calls,"in this period")+K("VISITS",visits,"meetings done")
+    +K("UPCOMING MEETINGS",upcoming,"from today")+K("OVERDUE FOLLOW-UPS",overdue,"need a call",overdue?"bad":"good")+K("STUCK 15+ DAYS",stuck.length,"in one stage",stuck.length?"bad":"good");
+  const live=leads.filter(l=>!leadLost(l)), mx=Math.max(1,...STAGES.map((s,i)=>live.filter(l=>stageIx(l)===i).length));
+  $("#al-funnel").innerHTML=STAGES.map((s,i)=>{const ls=live.filter(l=>stageIx(l)===i),v=ls.reduce((a,l)=>a+(Number(l.value)||0),0);
+    return `<div class="frow ${i===5?"won":""}"><span>${esc(s.toUpperCase())}</span><div class="bar2"><i style="width:${ls.length/mx*100}%"></i></div><span>${ls.length}${v?" · "+inr(v):""}</span></div>`}).join("");
+  const act=leads.map(l=>({l,c:counts(l,since)})).filter(x=>x.c.calls+x.c.visits).sort((a,b)=>(b.c.calls+b.c.visits)-(a.c.calls+a.c.visits)).slice(0,8);
+  const am=Math.max(1,...act.map(x=>x.c.calls+x.c.visits));
+  $("#al-active").innerHTML=act.length?act.map(x=>`<div class="frow"><span>${esc(x.l.name.toUpperCase())}</span><div class="bar2"><i style="width:${(x.c.calls+x.c.visits)/am*100}%"></i></div><span>📞${x.c.calls} · 🤝${x.c.visits}</span></div>`).join(""):`<p class="note" style="margin:0">No calls or visits logged in this period.</p>`;
+  $("#al-lost-n").textContent=`${lost.length} LOST`;
+  const rs=LOST_REASONS.map(r=>({r,ls:lost.filter(l=>(l.lostReason||"Other")===r)})).filter(x=>x.ls.length), rm=Math.max(1,...rs.map(x=>x.ls.length));
+  $("#al-lost").innerHTML=rs.length?rs.map(x=>`<div class="frow"><span>${esc(x.r.toUpperCase())}</span><div class="bar2"><i style="width:${x.ls.length/rm*100}%;background:var(--red)"></i></div><span>${x.ls.length}${x.ls.reduce((a,l)=>a+(Number(l.value)||0),0)?" · "+inr(x.ls.reduce((a,l)=>a+(Number(l.value)||0),0)):""}</span></div>`).join(""):`<p class="note" style="margin:0">No lost leads. Use ✕ Lost on a lead card to record why a deal was lost.</p>`;
+  const sm=Math.max(1,...stuck.map(daysInStage));
+  $("#al-stuck").innerHTML=stuck.length?stuck.sort((a,b)=>daysInStage(b)-daysInStage(a)).slice(0,8).map(l=>`<div class="frow"><span>${esc(l.name.toUpperCase())}</span><div class="bar2"><i style="width:${daysInStage(l)/sm*100}%;background:var(--amber)"></i></div><span>${daysInStage(l)}D · ${esc(STAGES[stageIx(l)])}</span></div>`).join(""):`<p class="note" style="margin:0">No lead has been in one stage for ${STUCK_DAYS}+ days.</p>`;
+  const rows=leads.slice().sort((a,b)=>(leadClosed(a)-leadClosed(b))||(stageIx(b)-stageIx(a))||((b.updatedAt||0)-(a.updatedAt||0)));
+  $("#al-count").textContent=`${rows.length} LEAD${rows.length===1?"":"S"}`;
+  $("#al-rows").innerHTML=rows.map(l=>{const c=counts(l,since),nf=nextFollow(l,today),md=meetDate(l),days=Math.max(0,Math.round((Date.now()-(l.createdAt||Date.now()))/864e5)),lq=latestQuote(l),dis=daysInStage(l);
+    const next=leadLost(l)?"Lost · "+(l.lostReason||""):leadWon(l)?"Closed":md?`Meeting ${fmtDate(md)} ${fmtTime(meetTime(l))}`:nf?`${l.followReason||"Call back"} · ${nf<today?"overdue ":""}${fmtDate(nf)}`:"—";
+    return `<tr><td>${esc(l.name)}</td><td>${esc(l.firm||"—")}</td><td>${esc(l.assignedTo?(l.assigneeName||userName(l.assignedTo)):"Me")}</td><td><span class="pill st${stageIx(l)}">${esc(leadLost(l)?"Lost":STAGES[stageIx(l)])}</span></td><td>${inr(l.value)||"—"}</td>
+      <td>${lq?esc([lq.no,inr(lq.amount)].filter(Boolean).join(" · "))+((l.quotes||[]).length>1?` <span class="pill late">REV ${(l.quotes||[]).length-1}</span>`:""):"—"}</td>
+      <td class="num">${days}</td><td class="num">${leadClosed(l)?"—":dis>=STUCK_DAYS?`<span class="pill bad">${dis}</span>`:dis}</td><td class="num">${c.calls}</td><td class="num">${c.visits}</td><td>${lastOf(l,"call")?fmtStamp(lastOf(l,"call")):"—"}</td><td>${lastOf(l,"visit")?fmtStamp(lastOf(l,"visit")):"—"}</td><td>${esc(next)}</td></tr>`}).join("");
+  $("#al-empty").hidden=rows.length>0;
 }
 
 /* ---------------- reminders & alerts (while the page is open) ---------------- */
@@ -1355,8 +1903,51 @@ function checkAlerts(){
     if(shownNow.has(t.id)) return;
     st[key]=1; delete st["snooze:"+t.id]; showAlert(t);
   });
+  leadAlerts(st,today,hm,now);
   saveAlertState(st);
 }
+/* lead reminders: follow-up due, meeting tomorrow, meeting today, 30 minutes before */
+function leadAlerts(st,today,hm,now){
+  const tmrw=addDays(today,1);
+  const fire=(id,kind,l,head,q,crit)=>{
+    const base=`L${kind}:${id}`, key=base+"@"+today, snz=st["snooze:"+base];
+    if(snz&&snz>now) return; if(st[key]&&!(snz&&snz<=now)) return; if(shownNow.has(base)) return;
+    st[key]=1; delete st["snooze:"+base]; showLeadAlert(l,base,kind,head,q,crit);
+  };
+  leads.filter(leadMine).forEach(l=>{
+    if(leadClosed(l)) return;
+    const nf=nextFollow(l,today);
+    if(nf&&nf<=today&&hm>="10:00"){const late=nf<today;fire(l.id,"f",l,late?"FOLLOW-UP OVERDUE · "+fmtDate(nf):"📞 FOLLOW-UP TODAY",`${l.followReason||"Call back"}${l.contact?" · "+l.contact:""}${l.phone?" · "+l.phone:""}`,late)}
+    const md=meetDate(l), mt=meetTime(l);
+    if(md===tmrw&&hm>="09:00") fire(l.id,"m1",l,"🤝 MEETING TOMORROW · "+fmtTime(mt),`${l.meetingNote||"Meeting"}${l.contact?" · "+l.contact:""}. Prepare documents tonight.`,false);
+    if(md===today&&hm>="09:00") fire(l.id,"m0",l,"🤝 MEETING TODAY · "+fmtTime(mt),`${l.meetingNote||"Meeting"}${l.contact?" · "+l.contact:""}`,false);
+    if(md===today&&mt){const [H,M]=mt.split(":").map(Number),d=new Date();d.setHours(H,M,0,0);const diff=d-now;
+      if(diff<=30*60000&&diff>-60*60000) fire(l.id,"m30",l,diff>0?`⏰ MEETING IN ${Math.max(1,Math.round(diff/60000))} MIN`:"⏰ MEETING TIME NOW",`${l.meetingNote||"Meeting"} with ${l.name}`,true)}
+  });
+}
+function showLeadAlert(l,base,kind,head,q,crit){
+  shownNow.add(base);
+  const box=document.createElement("div"); box.className="alert"+(crit?" crit":""); box.dataset.lbase=base; box.dataset.lid=l.id;
+  const isMeet=kind.startsWith("m");
+  box.innerHTML=`<small>${esc(head)}</small><b>${esc(l.name)}</b><div class="q">${esc(q)}</div>
+    <div class="row">${isMeet?(kind==="m1"?"":`<button class="btn sm primary" data-la="visit" type="button">✓ Meeting done</button>`):`<button class="btn sm primary" data-la="call" type="button">📞 Call done</button>`}
+      <button class="btn sm" data-la="open" type="button">Open lead</button><button class="btn sm" data-la="close" type="button">Dismiss</button></div>
+    <div class="snz">SNOOZE: <button type="button" data-la="snooze" data-min="10">10 MIN</button><button type="button" data-la="snooze" data-min="60">1 HR</button><button type="button" data-la="snooze" data-min="180">3 HRS</button><button type="button" data-la="snooze" data-min="1440">24 HRS</button></div>`;
+  $("#alerts").appendChild(box); beep(); setTimeout(beep,700);
+  logLine("> lead · "+head.toLowerCase()+" · "+l.name,"warn");
+  if(notifPerm()==="granted"&&document.visibilityState!=="visible"){try{const n=new Notification("Command Deck · "+head,{body:l.name+" — "+q,tag:"cd-"+base,requireInteraction:true});n.onclick=()=>{window.focus();n.close()}}catch{}}
+}
+$("#alerts").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-la]"); if(!b) return;
+  const box=b.closest(".alert"), base=box.dataset.lbase, l=leads.find(x=>x.id===box.dataset.lid);
+  box.remove(); shownNow.delete(base);
+  try{
+    if(b.dataset.la==="snooze"){const st=alertState();st["snooze:"+base]=Date.now()+(Number(b.dataset.min)||10)*60000;saveAlertState(st)}
+    else if(b.dataset.la==="call"&&l) await logLead(l,"call","");
+    else if(b.dataset.la==="visit"&&l) await logLead(l,"visit","");
+    else if(b.dataset.la==="open"&&l) openLead(l.id);
+  }catch(err){setMsg("#l-list-msg",fbError(err),true)}
+});
 function showAlert(t){
   shownNow.add(t.id);
   const today=todayStr(), rs=t.reschedules||0, daily=t.repeat==="daily", crit=!daily&&rs>=3;
@@ -1389,7 +1980,7 @@ $("#alerts").addEventListener("click",async e=>{
   if(b.dataset.al==="tmrw"&&t){try{await rescheduleTomorrow(t);
     if(t.repeat!=="daily"){const n=(t.reschedules||0)+1;logLine(`> rescheduled to tomorrow · ${n}x`,n>=3?"warn":"dim")}}catch(err){setMsg("#t-msg",fbError(err),true)}}
 });
-setInterval(()=>{ if(role){ checkAlerts(); renderTasksIfDayChanged() } },20000);
+setInterval(()=>{ if(role){ checkAlerts(); renderTasksIfDayChanged(); renderToday() } },20000);
 let lastDay=todayStr();
 function renderTasksIfDayChanged(){const d=todayStr(); if(d!==lastDay){lastDay=d; renderTasks()}}
 paintNotif();
@@ -1605,6 +2196,11 @@ $("#export-btn").addEventListener("click",async()=>{
       "Photos":images.map(i=>({Caption:i.caption||"",Folder:i.firm||"",Note:i.noteId?(notes.find(n=>n.id===i.noteId)?.title||""):"",Added:D(i.createdAt),"Size (KB)":Math.round((i.size||0)/1024)})),
       "Employees":users.map(u=>({Name:u.name,Username:u.username,Status:u.disabled?"Disabled":"Active",Apps:apps.filter(a=>(u.apps||[]).includes(a.id)).map(a=>a.name).join(", "),"Last seen":D(lastSeen(u.id))})),
       "Activity":activity.map(a=>({When:D(a.at),Person:a.name||"",Event:ACT_LABEL[a.type]||a.type,Detail:a.app||a.task||"",Device:a.device||""})),
+      "Leads":leads.map(l=>{const c=counts(l),lq=latestQuote(l);return {Lead:l.name,Contact:l.contact||"",Phone:l.phone||"",Email:l.email||"","Our firm":l.firm||"","Handled by":l.assignedTo?(l.assigneeName||userName(l.assignedTo)):"Admin",Stage:STAGES[stageIx(l)],Status:leadLost(l)?"Lost":leadWon(l)?"Won":"Open","Lost reason":leadLost(l)?[l.lostReason,l.lostNote].filter(Boolean).join(" · "):"","Days in stage":leadClosed(l)?"":daysInStage(l),"Value (₹)":Number(l.value)||"","Latest quotation":lq?lq.no||"":"","Quotation amount (₹)":lq?Number(lq.amount)||"":"","Revisions":Math.max(0,(l.quotes||[]).length-1),
+        "Follow-up":({none:"No reminder",daily:"Every day",every3:"Every 3 days",date:"On a date"})[l.followMode||"none"],"Next follow-up":nextFollow(l),Reason:l.followReason||"",Meeting:(l.meetingAt||"").replace("T"," "),Calls:c.calls,Visits:c.visits,
+        "Last call":D(lastOf(l,"call")),"Last visit":D(lastOf(l,"visit")),Created:D(l.createdAt),Notes:l.notes||""}}),
+      "Lead activity":leads.flatMap(l=>(l.activity||[]).map(a=>({Lead:l.name,Event:({call:"Call",visit:"Visit / meeting",stage:"Stage change",wa:"WhatsApp",quote:"Quotation",lost:"Marked lost",reopen:"Reopened",task:"Task added",created:"Lead added"})[a.t]||a.t,When:D(a.at),By:a.by||"","From stage":a.from||"","To stage":a.to||"",Note:a.note||""}))),
+      "Quotations":leads.flatMap(l=>(l.quotes||[]).map((q,i)=>({Lead:l.name,"Our firm":l.firm||"","Quotation no.":q.no||"","Amount (₹)":Number(q.amount)||"",Date:q.date||"",Revision:i,Saved:D(q.at)}))),
       "Apps":apps.map(a=>({App:a.name,Link:a.url}))
     };
     const wb=X.utils.book_new();
@@ -1630,6 +2226,8 @@ const ICONS={
   tasks:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16"/><path d="M7 12l3 3 7-7"/></svg>',
   notes:'<svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4M8 12h8M8 16h6"/></svg>',
   gallery:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/></svg>',
+  leads:'<svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>',
+  schedule:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4M7 14h3M14 14h3M7 17h3"/></svg>',
   analysis:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
   admin:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>'
 };
@@ -1790,6 +2388,7 @@ if(!CONFIGURED){
   $("#m1").style.width="100%";
   onAuthStateChanged(auth,async user=>{
     stopAll(); booted=false; pending=[];
+    if(user) resetGateMfa();
     if(!user){ setLoggedOutUI(); $("#sys-state").textContent="LOCKED"; return }
     $("#gate").hidden=true; $("#who").hidden=false;
     role = (user.email||"").toLowerCase()===ADMIN_EMAIL.toLowerCase() ? "admin" : "employee";
@@ -1799,9 +2398,9 @@ if(!CONFIGURED){
     $("#tf-who").hidden=!isAdmin();
     $("#who-name").textContent=isAdmin()?"ADMIN":"…";
     const want=location.hash.slice(1);
-    const first=["tasks"].includes(want)||(isAdmin()&&["admin","analysis","gallery","addtask","notes"].includes(want))?want:"apps";
+    const first=["tasks","leads","schedule"].includes(want)||(isAdmin()&&["admin","analysis","gallery","addtask","notes"].includes(want))?want:"apps";
     orbit.current=first; orbit.playIntro=true; buildOrbit(); show(first);
-    if(isAdmin()) logVisit("Admin");
+    if(isAdmin()){ logVisit("Admin"); paintMfa() }
     boot();
     if(isAdmin()){watchAdmin(); logLine("> identity confirmed · ADMIN","ok")}
     else{watchEmployee(user.uid); logLine("> identity confirmed","ok")}
